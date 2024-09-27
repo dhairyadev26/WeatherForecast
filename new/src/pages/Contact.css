@@ -1,0 +1,20 @@
+.contact-section {
+    width :100%;
+    max-width :1200px; /* Limit width for larger screens */
+    margin-top :40px; /* Space between sections */
+    padding :0 50px; /* Add horizontal padding */ 
+    text-align:center; 
+ }
+ 
+ .contact-form input,
+ .contact-form textarea {
+    width :80%; /* Full width of the form elements */  
+    margin-bottom :15px ; 
+    padding :10px ; 
+ }
+ 
+ .submit-button {
+    background :linear-gradient(45deg,#00c6ff,#0072ff); /* Gradient Colors */  
+    border:none ;  
+    padding :10px ;  
+ }

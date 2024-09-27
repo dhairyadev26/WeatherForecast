@@ -1,0 +1,16 @@
+.testimonials-section {
+    width :100%;
+    max-width :1200px; /* Limit width for larger screens */
+    margin-top :40px; /* Space between sections */
+    padding :0 50px; /* Add horizontal padding */ 
+    text-align:center; 
+ }
+ 
+ .testimonials-section h2 {
+    margin-bottom :20px; 
+ }
+ 
+ .testimonials-section blockquote {
+    font-style :italic; 
+    margin-bottom :10px; 
+ }

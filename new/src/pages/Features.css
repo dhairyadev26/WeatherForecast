@@ -1,0 +1,29 @@
+.features-section {
+    width: 100%;
+    max-width: 1200px; /* Limit width for larger screens */
+    margin-top: 40px; /* Space between sections */
+    padding: 0 50px; /* Add horizontal padding */
+    text-align: center; 
+ }
+ 
+ .features-section h2 {
+    margin-bottom: 20px; 
+ }
+ 
+ .feature-blocks {
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: space-around; 
+ }
+ 
+ .feature-block {
+    width: calc(33% - 20px); /* Responsive feature blocks */
+    margin-bottom: 20px; 
+ }
+ 
+ /* Responsive Design */
+ @media (max-width:768px) {
+    .feature-block {
+        width: calc(100% -20px); /* Stack features on smaller screens */
+    }
+ }

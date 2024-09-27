@@ -1,0 +1,106 @@
+/* Navbar.css */
+.navbar {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 999;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    overflow: visible; /* Prevent content overflow */
+}
+
+.navbar.transparent {
+    background: transparent;
+}
+
+.navbar.scrolled {
+    background: rgba(15, 12, 41, 0.4);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Ensure logo stays aligned to the left */
+.logo {
+    transition: background 0.3s ease, color 0.3s ease;
+    background: linear-gradient(70deg, #00dbde, #fc00ff, #00f260, #0575e6); /* Gradient colors */
+    background-size: 400%; /* Make the background size larger to enable movement */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientAnimation 8s linear infinite; /* Apply animation */
+    flex: 0 1 auto; /* Allow flexibility and avoid overflow */
+}
+
+/* Nav links container */
+.nav-links {
+    display: flex;
+    justify-content: flex-end; /* Align items to the right */
+    align-items: center;
+    gap: 20px; /* Space between links */
+    list-style-type: none;
+    margin: 0;
+    margin-right: 50px; /* Push to the right side */
+    padding: 0;
+    overflow: visible; /* Avoid overflow issues */
+}
+
+/* Create the animated gradient effect for the links */
+.nav-links a {
+    text-decoration: none;
+    font-size: 15px;
+    transition: background 0.3s ease, color 0.3s ease;
+    background: linear-gradient(70deg, #00dbde, #fc00ff, #00f260, #0575e6); /* Gradient colors */
+    background-size: 400%; /* Make the background size larger to enable movement */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientAnimation 8s linear infinite; /* Apply animation */
+}
+
+/* Hover effect to change gradient on hover */
+.nav-links a:hover {
+    background: linear-gradient(70deg, #00f260, #0575e6, #ff4e50, #f9d423);
+    background-size: 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Gradient Animation */
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .navbar {
+        padding: 15px 15px; /* Reduce padding on medium screens */
+    }
+    .nav-links {
+        gap: 10px; /* Reduce gap between links */
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap; /* Allow wrapping */
+        padding: 15px 10px;
+    }
+    .nav-links {
+        margin-left: auto; /* Keep links aligned right */
+        gap: 5px; /* Further reduce gap on small screens */
+        justify-content: flex-end; /* Align to the right */
+    }
+    .nav-links a {
+        font-size: 16px; /* Smaller font size */
+    }
+}

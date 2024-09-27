@@ -1,0 +1,16 @@
+.benefits-section {
+    width:100%;
+    max-width :1200px; /* Limit width for larger screens */
+    margin-top :40px; /* Space between sections */
+    padding :0 50px; /* Add horizontal padding */ 
+    text-align:center; 
+ }
+ 
+ .benefits-section h2 {
+    margin-bottom :20px; 
+ }
+ 
+ .benefits-section ul {
+    list-style-type :none; 
+    padding :0; 
+ }
