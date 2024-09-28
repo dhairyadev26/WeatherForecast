@@ -8,11 +8,11 @@ function Pricing() {
       <div className="pricing-plans">
         <div className="plan">
           <h3>Basic Plan</h3>
-          <p>$99 - Includes heart rate monitoring, step tracking, and sleep analysis.</p>
+          <p>$99 - Includes expense monitoring, tracking, and analysis.</p>
         </div>
         <div className="plan">
           <h3>Advanced Plan</h3>
-          <p>$149 - Includes GPS navigation, smart notifications, and multi-sport tracking.</p>
+          <p>$149 - Includes balance monitoring, smart notifications, and multi-sport tracking.</p>
         </div>
         <div className="plan">
           <h3>Pro Plan</h3>

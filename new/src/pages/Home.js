@@ -1,24 +1,29 @@
-import React from "react";
-import Spline from '@splinetool/react-spline';
-import "./Home.css";
+import React from 'react';
+import './Home.css';
+import videoSrc from '../assets/videobg3.mp4'; // Adjust the path as needed
+import piggyImg from '../assets/piggy1.png'; // Replace with the actual filename of your animated PNG
 
-function Home() {
-  return (
-    <div className="home-container">
-      <div className="main-content">
-        <div className="text-section">
-          <h1>Track. Improve. Thrive.</h1>
-          <p>
-            Elevate your fitness journey with our cutting-edge wearable fitness tracker.
-          </p>
-          <button className="hero-button">Learn More</button>
+const Home = () => {
+    return (
+        <div className="home-container">
+            <div className="video-container">
+                <video className="video-background" autoPlay loop muted>
+                    <source src={videoSrc} type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div className="main-content">
+                <div className="text-section">
+                    <h1>Track. Control. Grow.</h1>
+                    <p>Track expenses, set budgets, and gain insights <br></br>to improve your financial health effortlessly.</p>
+                    <button className="hero-button">Get Started</button>
+                </div>
+                <div className="image-section">
+                    <img className="right-image" src={piggyImg} alt="Animated Piggy" />
+                </div>
+            </div>
         </div>
-        
-          <Spline scene="https://prod.spline.design/bm6K2SsknLf7gSvI/scene.splinecode" />
-       
-      </div>
-    </div>
-  );
-}
+    );
+};
 
 export default Home;
