@@ -1,5 +1,5 @@
 /* eslint-disable */
 
-export const APP_ID = "2187t187218t289nkjcbew";
+export const APP_ID = "";
 
 /* eslint-enable */
