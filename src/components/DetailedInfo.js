@@ -37,4 +37,3 @@ export default DetailedInfo;
 
 
 
-// Commit: finish @ 2024-10-08T03:41:47
