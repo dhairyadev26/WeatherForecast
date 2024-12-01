@@ -5,10 +5,6 @@ import { fetchData } from "./actions/weatherStation";
 
 import WeatherForecast from './components/WeatherForecast';
 
-
-
-
-
 @connect(store => {  
   return {
     forecast: store.weatherStation.data
