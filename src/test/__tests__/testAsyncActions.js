@@ -9,7 +9,6 @@ require("isomorphic-fetch");
 import { fetchData } from "../../actions/weatherStation";
 
 const middlewares = [thunk];
-const mockStore = configureStore(middlewares);
 
 it("should execute fetchData and return the required action type", () => {
   const store = mockStore({});
