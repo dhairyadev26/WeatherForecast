@@ -2,11 +2,12 @@ import React from "react";
 import { render, mount, shallow } from "enzyme";
 
 import configureStore from "redux-mock-store";
+const mockStore = configureStore();
 
 import Dashboard from "../../components/Dashboard";
 const STATUS = "success";
 
-describe("<Dashboard />", () => {
+describe("<Dashoard />", () => {
   it("renders an `.weather-dashboard`", () => {
     const wrapper = render(<Dashboard store={mockStore({ weatherStation: {status: STATUS}})} />);
     expect(wrapper.hasClass("weather-dashboard")).toBe(true);
