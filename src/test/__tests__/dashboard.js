@@ -18,7 +18,6 @@ describe("<Dashboard />", () => {
     expect(wrapper.find(".city-input")).toHaveLength(1);
   });
 
-  it("should contain a change city button", () => {
     const wrapper = render(<Dashboard store={mockStore({ weatherStation: {status: STATUS}})} />);
     expect(wrapper.find("#change-city-btn")).toHaveLength(1);
   });
