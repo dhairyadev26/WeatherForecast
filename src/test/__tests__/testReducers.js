@@ -3,6 +3,7 @@ import React from "react";
 import * as actions from "../../actions/weatherStation";
 import reducer from "../../reducers";
 
+import { FETCH_DATA_FULFILLED, FETCH_DATA_REJECTED } from "../../constants/ActionTypes";
 
 import mockData from "./data/forecast.json";
 
