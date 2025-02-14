@@ -13,7 +13,7 @@ const mockStore = configureStore(middlewares);
 
 it("should execute fetchData and return the required action type", () => {
   const store = mockStore({});
-  return store.dispatch(fetchData("america"))
+  return store.dispatch(fetchData("london"))
     .then(() => {
       const actions = store.getActions();
 
