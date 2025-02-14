@@ -2,7 +2,6 @@ import React from "react";
 import { render, mount, shallow } from "enzyme";
 
 import configureStore from "redux-mock-store";
-const mockStore = configureStore();
 
 import Dashboard from "../../components/Dashboard";
 const STATUS = "success";
