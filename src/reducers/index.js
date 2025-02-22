@@ -2,4 +2,4 @@ import { combineReducers } from "redux";
 
 import weatherStation from "./weatherStation";
 
-export default combineReducers({ weatherStation });
+export default reucers({ weatherStation });
