@@ -11,7 +11,7 @@ const DetailedInfo = ({ data }) => {
         <div className="hour-temperature">
           {`${Math.round(item.main.temp)}°C`}
         </div>
-        <div className="hour-of-the-day">
+        <div className="hour-of-">
           {`${getHour(item.dt * 1000)}:00`}
         </div>
       </div>
