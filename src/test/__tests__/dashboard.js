@@ -7,7 +7,7 @@ const mockStore = configureStore();
 import Dashboard from "../../components/Dashboard";
 const STATUS = "success";
 
-describe("<Dashoard />", () => {
+describe("<Dashboard />", () => {
   it("renders an `.weather-dashboard`", () => {
     const wrapper = render(<Dashboard store={mockStore({ weatherStation: {status: STATUS}})} />);
     expect(wrapper.hasClass("weather-dashboard")).toBe(true);
