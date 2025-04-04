@@ -15,7 +15,7 @@ describe("<WeatherForecast />", () => {
     expect(wrapper.hasClass("weather-forecast-wrapper")).toBe(true);
   });
 
-  it("should dashboard", () => {
+  it("should contain a dashboard", () => {
     const wrapper = shallow(<WeatherForecast data={data.weatherStation.data} />);
     expect(wrapper.find(Dashboard)).toHaveLength(1);
   });
