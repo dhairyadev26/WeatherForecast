@@ -14,16 +14,13 @@ export default class ForecastTiles extends Component {
     }, {}));
   };
 
-  // Returns week of the day
   _getDayInfo = data => {
     const daysOfWeek = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
     return daysOfWeek[new Date(data[0].dt * 1000).getDay()];
   };
 
-  // Fetches the icon using the icon code available in the forecast data.
   _getIcon = data => `https://openweathermap.org/img/w/${data[0].weather[0].icon}.png`;
 
-  // Gets the Minimum, Maximum and Avg Humidity temperatures of the day.
   _getInfo = (data, min=[], max=[], humidity=[]) => {
     data.map(item => {
       max.push(item.main.temp_max);
@@ -36,7 +33,6 @@ export default class ForecastTiles extends Component {
       max: Math.round(Math.max(...max)),
     };
 
-    // Gets the day's average humdity
     const avgHumdity = Math.round(humidity.reduce((curr, next) => curr + next) / humidity.length);
 
     return (
