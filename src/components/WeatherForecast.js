@@ -11,7 +11,6 @@ const WeatherForecast = ({ data }) => {
   
     return (
       <div className="weather-forecast-wrapper">
-        <Dashboard city={name} />
         <ForecastTiles forecasts={list} />
       </div>
     );
