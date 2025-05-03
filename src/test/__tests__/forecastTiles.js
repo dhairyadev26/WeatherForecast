@@ -2,6 +2,7 @@ import React from "react";
 import { render } from "enzyme";
 
 import configureStore from "redux-mock-store";
+const mockStore = configureStore();
 
 import data from "./data/forecast.json";
 const { list } = data.weatherStation.data;
