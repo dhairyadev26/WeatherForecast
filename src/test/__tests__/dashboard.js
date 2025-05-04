@@ -33,4 +33,4 @@ describe("<Dashboard />", () => {
     const wrapper = shallow(<Dashboard city="london" store={mockStore({ weatherStation: {status: STATUS}})} />);
     expect(wrapper.prop("city")).toBeDefined();
   });
-});\n// Commit: stream/ @ 2025-04-29T15:52:36
+});
