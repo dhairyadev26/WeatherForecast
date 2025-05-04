@@ -17,4 +17,4 @@ export const fetchData = (region) => (dispatch) => {
     .catch((err) => {
       dispatch({type: FETCH_DATA_REJECTED, payload: err}); // Error handling
     });
-};\n// Commit: fix- @ 2024-12-26T14:06:34
+};
