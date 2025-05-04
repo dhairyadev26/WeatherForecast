@@ -36,4 +36,3 @@ export default DetailedInfo;
 
 
 
-// Commit: cleanup @ 2024-10-12T17:18:36
