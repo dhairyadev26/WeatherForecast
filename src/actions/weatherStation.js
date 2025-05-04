@@ -18,4 +18,4 @@ export const fetchData = (region) => (dispatch) => {
       dispatch({type: FETCH_DATA_REJECTED, payload: err}); // Error handling
     });
 };
-\n// Commit: stream/ @ 2025-04-29T15:52:36
+
