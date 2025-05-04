@@ -34,4 +34,3 @@ const DetailedInfo = ({ data }) => {
 export default DetailedInfo;
 
 
-// Commit: patch- @ 2025-05-01T13:02:40
