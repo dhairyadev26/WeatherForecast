@@ -1,44 +1,40 @@
-import React, { Component } from "react";
-
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { fetchData } from "./actions/weatherStation";
-
 import WeatherForecast from './components/WeatherForecast';
 
-@connect(store => {  
-  return {
-    forecast: store.weatherStation.data
-  }
-})
-export default class App extends Component {
-
+const App = ({ dispatch, forecast }) => {
   // Fetches data by using geolocation. If the user blocks, or if the browser does not support the API, 
   // fallsback to default location of London
-  componentDidMount() {  
-    const detectLocation = new Promise((resolve,reject) => {
+  useEffect(() => {
+    const detectLocation = new Promise((resolve) => {
       if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          resolve(position.coords);
-        }, (error) => {
-          if(error.code === error.PERMISSION_DENIED) {
-            console.error("Error detecting location.");
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            resolve(position.coords);
+          }, 
+          (error) => {
+            if(error.code === error.PERMISSION_DENIED) {
+              console.error("Error detecting location.");
+            }
+            resolve(null);
           }
-        });
+        );
+      } else {
+        resolve(null);
       }
     });
 
     detectLocation.then((location) => {
-      this.props.dispatch(fetchData(location));
+      dispatch(fetchData(location));
     }).catch(() => {
-      this.props.dispatch(fetchData("london"));
+      dispatch(fetchData("london"));
     });
-  }
+  }, [dispatch]);
 
-  render() {
-    const { forecast } = this.props;
-
-    return (
-      forecast === null ? (
+  return (
+    <>
+      {forecast === null ? (
         <div className="loading">
           <div className="spinner"></div>
         </div>
@@ -46,10 +42,18 @@ export default class App extends Component {
         <div>
           <WeatherForecast data={forecast} />
           <div className="fork">
-            <a href="https://github.com/Gigacore/react-weather-forecast" target="_blank">Fork it on Github</a>
+            <a href="https://github.com/dhairyadev26/WeatherForecast" target="_blank" rel="noopener noreferrer">
+              Fork it on Github
+            </a>
           </div> 
         </div>
-      )
-    );
-  }
-}
+      )}
+    </>
+  );
+};
+
+const mapStateToProps = (state) => ({
+  forecast: state.weatherStation.data
+});
+
+export default connect(mapStateToProps)(App);

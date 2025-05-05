@@ -1,40 +1,47 @@
 const path = require("path");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const webpack = require("webpack");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  entry: ["./src/index.js", "./src/styles/main.scss"],
+  mode: "development",
+  entry: "./src/index.js",
   output: {
     filename: "bundle.js",
-    path: path.resolve(__dirname, "./public/dist")
+    path: path.resolve(__dirname, "dist"),
+    clean: true
   },
   module: {
     rules: [
       {
-        test: /\.scss/,
-        loader: ExtractTextPlugin.extract(["css-loader", "sass-loader"])
-      },
-      {
         test: /\.js$/,
         exclude: /node_modules/,
-        loaders: "eslint-loader",
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env", "@babel/preset-react"]
+          }
+        }
       },
       {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loaders: "babel-loader"
+        test: /\.scss$/,
+        use: ["style-loader", "css-loader", "sass-loader"]
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: "asset/resource"
       }
     ]
   },
-  devServer: {
-    contentBase: "./public/",
-    watchContentBase: true
-  },
   plugins: [
-    new ExtractTextPlugin("bundle.css"),
-    new webpack.DefinePlugin({
-      "process.env.NODE_ENV": JSON.stringify("production")
-    }),
-    new webpack.optimize.UglifyJsPlugin()
-  ]
+    new HtmlWebpackPlugin({
+      template: "./public/index.html",
+      filename: "index.html"
+    })
+  ],
+  devServer: {
+    static: {
+      directory: path.join(__dirname, "public")
+    },
+    port: 3000,
+    hot: true
+  }
 };
