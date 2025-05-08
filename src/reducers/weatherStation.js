@@ -1,30 +1,39 @@
 import { FETCH_DATA_FULFILLED, FETCH_DATA_REJECTED } from "../constants/ActionTypes";
 
-export default function reducer(state = {
+// Initial state for the weather station reducer
+const initialState = {
   data: null,
-  status: null
-}, action) {
+  status: "idle", // idle, loading, success, or error
+  error: null
+};
+
+/**
+ * Weather station reducer to handle fetch data actions
+ * @param {Object} state - Current state 
+ * @param {Object} action - Action dispatched
+ * @returns {Object} New state
+ */
+export default function weatherStationReducer(state = initialState, action) {
   switch (action.type) {
-    case FETCH_DATA_FULFILLED: {
+    case FETCH_DATA_FULFILLED:
       return {
         ...state,
         data: action.payload,
-        status: "success"
+        status: "success",
+        error: null
       };
-      break;
-    }
-    case FETCH_DATA_REJECTED: {
+    
+    case FETCH_DATA_REJECTED:
+      console.error(`Could not fetch the data from webservice. ${action.payload}.`);
       return {
         ...state,
-        status: "failed"
+        status: "error",
+        error: action.payload
       };
-
-      console.error(`Could not fetch the data from webservice. ${action.payload}.`); // eslint-disable-line
-      break;
-    }
+      
+    default:
+      return state;
   }
-
-  return state;
 }
 
 
