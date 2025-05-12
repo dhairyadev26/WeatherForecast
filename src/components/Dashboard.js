@@ -1,60 +1,78 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
+import React, { useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import { fetchData } from "../actions/weatherStation";
 
-@connect((store) => {
-  return {
-    status: store.weatherStation.status
-  }
-})
-export default class Dashboard extends Component {
+/**
+ * Dashboard component that displays the main controls and header
+ * @param {Object} props - Component props
+ * @param {string} props.city - Current city name
+ */
+const Dashboard = ({ city }) => {
+  const dispatch = useDispatch();
+  const status = useSelector((state) => state.weatherStation.status);
+  const [inputValue, setInputValue] = useState("");
+  const inputRef = useRef(null);
 
-  _updateCity = () => {
-    const city = this.__cityInput.value;
-    city.length !== 0 ? this.props.dispatch(fetchData(city)) : null;
-  }
+  const wrapperClass = status === "error" 
+    ? "weather-dashboard invalid-city" 
+    : "weather-dashboard";
 
-  _onkeyPress = e => {
-    e.key === "Enter" ? this._updateCity() : null
-  }
+  const updateCity = () => {
+    if (inputValue.trim().length > 0) {
+      dispatch(fetchData(inputValue.trim()));
+      setInputValue("");
+    }
+  };
 
-  render() {
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      updateCity();
+    }
+  };
 
-    const { city, status } = this.props;
-    const wrapperClass = (status === "failed") ? "weather-dashboard invalid-city" : "weather-dashboard";
+  return (
+    <div className={wrapperClass}>
+      <header>
+        <h1 className="heading">5-Day Weather Forecast</h1>
+      </header>
+      <section className="controls">
+        <div className="search-container">
+          <input
+            type="text"
+            className="city-input"
+            id="city-name"
+            ref={inputRef}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder={city || "Enter city name"}
+            aria-label="City name"
+          />
+          <input
+            type="button"
+            value=">"
+            className="search"
+            onClick={updateCity}
+            id="change-city-btn"
+            aria-label="Search city"
+          />
+        </div>
+      </section>
+      <span className="error">Please enter valid city name!</span>
+    </div>
+  );
+};
 
-    return (
-      <div className={wrapperClass}>
-        <header>
-          <h1 className="heading">5-Day Weather Forecast</h1>
-        </header>
-        <section className="controls">
-          <div>
-            <input
-              type="text"
-              className="city-input"
-              id="city-name"
-              ref={input => {
-                this.__cityInput = input;
-                return this.__cityInput;
-              }}
-              onKeyPress={this._onkeyPress}
-              placeholder={city}
-            />
-            <input
-              type="button"
-              value="&gt;"
-              className="search"
-              onClick={this._updateCity}
-              id="change-city-btn"
-            />
-          </div>
-        </section>
-        <span className="error">Please enter valid city name!</span>
-      </div>
-    );
-  }
-}
+Dashboard.propTypes = {
+  city: PropTypes.string
+};
+
+Dashboard.defaultProps = {
+  city: "London"
+};
+
+export default Dashboard;
 
 
 
