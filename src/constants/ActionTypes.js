@@ -1,11 +1,19 @@
-// ActionTypes are defined in constants.
+/**
+ * Action type constants for Redux actions
+ * Used to maintain consistency between actions and reducers
+ */
 
-// They are imported in Actions and Reducers.
-// This prevents errors if they are misspelled over here.
-
-/* eslint-disable */
-
+// Weather data fetching action types
+export const FETCH_DATA_REQUEST = "FETCH_DATA_REQUEST";
 export const FETCH_DATA_FULFILLED = "FETCH_DATA_FULFILLED";
 export const FETCH_DATA_REJECTED = "FETCH_DATA_REJECTED";
+
+// Forecast display settings action types
+export const SET_TEMPERATURE_UNIT = "SET_TEMPERATURE_UNIT";
+export const SET_DISPLAY_MODE = "SET_DISPLAY_MODE";
+
+// User preferences action types
+export const SET_DEFAULT_LOCATION = "SET_DEFAULT_LOCATION";
+export const TOGGLE_DARK_MODE = "TOGGLE_DARK_MODE";
 
 /* eslint-enable */
