@@ -1,101 +1,115 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 import DetailedInfo from "./DetailedInfo";
+import { TEMPERATURE_UNITS } from "../constants/generalConstants";
 
-export default class ForecastTiles extends Component {
+/**
+ * ForecastTiles component for displaying a 5-day weather forecast
+ * @param {Object} props - Component props
+ * @param {Array} props.forecasts - Array of forecast data
+ * @param {string} props.unit - Temperature unit (metric or imperial)
+ */
+const ForecastTiles = ({ forecasts, unit = TEMPERATURE_UNITS.CELSIUS }) => {
+  const [expandedTileIndex, setExpandedTileIndex] = useState(null);
 
-  // Filters the data by date and returns an Object containing a list of 5-day forecast.
-  _groupByDays = data => {
-    return (data.reduce((list, item) => {
-      const forecastDate = item.dt_txt.substr(0,10);
+  // Filters the data by date and returns an Object containing a list of 5-day forecast
+  const groupByDays = (data) => {
+    return data.reduce((list, item) => {
+      const forecastDate = item.dt_txt.substr(0, 10);
       list[forecastDate] = list[forecastDate] || [];
       list[forecastDate].push(item);
-
       return list;
-    }, {}));
+    }, {});
   };
 
-  // Returns week of the day
-  _getDayInfo = data => {
-    const daysOfWeek = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+  // Returns day of the week
+  const getDayInfo = (data) => {
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     return daysOfWeek[new Date(data[0].dt * 1000).getDay()];
   };
 
-  // Fetches the icon using the icon code available in the forecast data.
-  _getIcon = data => `https://openweathermap.org/img/w/${data[0].weather[0].icon}.png`;
+  // Fetches the weather icon
+  const getIcon = (data) => `https://openweathermap.org/img/w/${data[0].weather[0].icon}.png`;
 
-  // Gets the Minimum, Maximum and Avg Humidity temperatures of the day.
-  _getInfo = (data, min=[], max=[], humidity=[]) => {
-    data.map(item => {
-      max.push(item.main.temp_max);
-      min.push(item.main.temp_min);
-      humidity.push(item.main.humidity);
-    });
-
-    const minMax = {
-      min: Math.round(Math.min(...min)),
-      max: Math.round(Math.max(...max)),
+  // Gets the Minimum, Maximum temperatures and Avg Humidity of the day
+  const getInfo = (data) => {
+    const temps = {
+      min: [],
+      max: [],
+      humidity: []
     };
 
-    // Gets the day's average humdity
-    const avgHumdity = Math.round(humidity.reduce((curr, next) => curr + next) / humidity.length);
+    data.forEach(item => {
+      temps.max.push(item.main.temp_max);
+      temps.min.push(item.main.temp_min);
+      temps.humidity.push(item.main.humidity);
+    });
+
+    const minTemp = Math.round(Math.min(...temps.min));
+    const maxTemp = Math.round(Math.max(...temps.max));
+    const avgHumidity = Math.round(
+      temps.humidity.reduce((curr, next) => curr + next) / temps.humidity.length
+    );
+
+    // Temperature unit symbol
+    const unitSymbol = unit === TEMPERATURE_UNITS.CELSIUS ? '°C' : '°F';
 
     return (
       <div className="weather-info">
         <div className="min-max">
-          <strong>{`${minMax.max}°C`}</strong> / {`${minMax.min}°C`}
+          <strong>{`${maxTemp}${unitSymbol}`}</strong> / {`${minTemp}${unitSymbol}`}
         </div>
         <div className="more-info">
-          {`Avg. Humidity: ${avgHumdity}%`}
+          {`Avg. Humidity: ${avgHumidity}%`}
         </div>
       </div>
     );
   };
 
   // Toggles accordion to display hourly weather information
-  _showMoreInfo = (index) => {
-    const elm = this.refs[`div-${index}`];
-    const expandedElment = document.querySelector(".expanded");
+  const showMoreInfo = (index) => {
+    setExpandedTileIndex(expandedTileIndex === index ? null : index);
+  };
 
-    elm.classList.add("expanded");
-    expandedElment !== null && expandedElment.classList.remove("expanded");
-  }
+  // Group forecasts by day
+  const tiles = Object.values(groupByDays(forecasts));
 
-  render() {
+  // Ensure we only show 5 days of forecast
+  const forecastTiles = tiles.length > 5 ? tiles.slice(0, 5) : tiles;
 
-    const { forecasts } = this.props;
-    const tiles = Object.values(this._groupByDays(forecasts));
-
-    // Edge case:
-    // When the webservice returns data for 6 calendar days during evenings as a result of offset,
-    // this ensures that we are showing only 5-days of forecast.
-    const forecastTiles = tiles.length > 5 ? tiles.slice(0, 5) : tiles;
-
-    return (
-      <div className="forecast-tiles">
-        {forecastTiles.map((item, i) => (
-          <div
-            className={`forecast-tile tile-${i}`}
-            key={i}
-            ref={`div-${i}`}
-            onClick={() => {this._showMoreInfo(i)}}
-          >
-            <div className="primary-info">
-              <div className="icon">
-                <img src={this._getIcon(item)} />
-                {this._getDayInfo(item)}
-              </div>
-              {this._getInfo(item)}
+  return (
+    <div className="forecast-tiles">
+      {forecastTiles.map((item, i) => (
+        <div
+          className={`forecast-tile ${expandedTileIndex === i ? 'expanded' : ''}`}
+          key={i}
+          onClick={() => showMoreInfo(i)}
+          data-testid={`forecast-tile-${i}`}
+        >
+          <div className="primary-info">
+            <div className="icon">
+              <img src={getIcon(item)} alt={item[0].weather[0].description} />
+              <span className="day">{getDayInfo(item)}</span>
             </div>
-            <div className="detailed-info" key={i}>
-              <DetailedInfo data={item} />
-            </div>
+            {getInfo(item)}
           </div>
-        ))}
-      </div>
-    );
-  }
-}
-// TODO: Add defaultProps and PropType validations
+          {expandedTileIndex === i && (
+            <div className="detailed-info">
+              <DetailedInfo data={item} unit={unit} />
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+ForecastTiles.propTypes = {
+  forecasts: PropTypes.array.isRequired,
+  unit: PropTypes.string
+};
+
+export default ForecastTiles;
 
 
 
