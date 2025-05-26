@@ -1,33 +1,133 @@
 import React from "react";
-import { render, mount, shallow } from "enzyme";
-
+import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-const mockStore = configureStore();
-
+import { fetchData } from "../../actions/weatherStation";
 import Dashboard from "../../components/Dashboard";
-const STATUS = "success";
 
-describe("<Dashboard />", () => {
-  it("renders an `.weather-dashboard`", () => {
-    const wrapper = render(<Dashboard store={mockStore({ weatherStation: {status: STATUS}})} />);
-    expect(wrapper.hasClass("weather-dashboard")).toBe(true);
+// Mock redux store
+const mockStore = configureStore([]);
+
+// Mock the fetchData action
+jest.mock("../../actions/weatherStation", () => ({
+  fetchData: jest.fn()
+}));
+
+describe("Dashboard Component", () => {
+  let store;
+  
+  beforeEach(() => {
+    // Create a fresh store for each test
+    store = mockStore({
+      weatherStation: {
+        status: "success",
+        data: null,
+        error: null
+      }
+    });
+    
+    // Clear mock calls between tests
+    fetchData.mockClear();
   });
 
-  it("should contain a input field", () => {
-    const wrapper = render(<Dashboard store={mockStore({ weatherStation: {status: STATUS}})} />);
-    expect(wrapper.find(".city-input")).toHaveLength(1);
+  test("renders the dashboard with correct heading", () => {
+    render(
+      <Provider store={store}>
+        <Dashboard city="London" />
+      </Provider>
+    );
+    
+    expect(screen.getByText("5-Day Weather Forecast")).toBeInTheDocument();
   });
 
-  it("should contain a change city button", () => {
-    const wrapper = render(<Dashboard store={mockStore({ weatherStation: {status: STATUS}})} />);
-    expect(wrapper.find("#change-city-btn")).toHaveLength(1);
+  test("renders the search input with city placeholder", () => {
+    render(
+      <Provider store={store}>
+        <Dashboard city="London" />
+      </Provider>
+    );
+    
+    const input = screen.getByPlaceholderText("London");
+    expect(input).toBeInTheDocument();
+    expect(input).toHaveAttribute("type", "text");
   });
 
-  it("should contain app heading", () => {
-    const wrapper = mount(<Dashboard store={mockStore({ weatherStation: {status: STATUS}})} />);
-    const heading = <h1 className="heading">5-Day Weather Forecast</h1>;
-    expect(wrapper.contains(heading)).toEqual(true);
+  test("renders the search button", () => {
+    render(
+      <Provider store={store}>
+        <Dashboard city="London" />
+      </Provider>
+    );
+    
+    const button = screen.getByRole("button");
+    expect(button).toBeInTheDocument();
   });
+
+  test("dispatches fetchData action when search button is clicked", () => {
+    render(
+      <Provider store={store}>
+        <Dashboard city="London" />
+      </Provider>
+    );
+    
+    const input = screen.getByPlaceholderText("London");
+    const button = screen.getByRole("button");
+    
+    // Type in a city name
+    fireEvent.change(input, { target: { value: "Paris" } });
+    
+    // Click search button
+    fireEvent.click(button);
+    
+    // Check if the action was dispatched
+    expect(store.getActions()).toEqual([
+      { type: "FETCH_DATA_REQUEST" }
+    ]);
+  });
+
+  test("dispatches fetchData action when Enter key is pressed", () => {
+    render(
+      <Provider store={store}>
+        <Dashboard city="London" />
+      </Provider>
+    );
+    
+    const input = screen.getByPlaceholderText("London");
+    
+    // Type in a city name
+    fireEvent.change(input, { target: { value: "Berlin" } });
+    
+    // Press Enter key
+    fireEvent.keyPress(input, { key: "Enter", code: 13, charCode: 13 });
+    
+    // Check if the action was dispatched
+    expect(store.getActions()).toEqual([
+      { type: "FETCH_DATA_REQUEST" }
+    ]);
+  });
+
+  test("shows error message when status is error", () => {
+    // Create store with error status
+    const errorStore = mockStore({
+      weatherStation: {
+        status: "error",
+        data: null,
+        error: "Location not found"
+      }
+    });
+    
+    render(
+      <Provider store={errorStore}>
+        <Dashboard city="InvalidCity" />
+      </Provider>
+    );
+    
+    const errorMsg = screen.getByText("Please enter valid city name!");
+    expect(errorMsg).toBeInTheDocument();
+    expect(errorMsg).toBeVisible();
+  });
+});
 
   it("should receive city prop", () => {
     const wrapper = shallow(<Dashboard city="london" store={mockStore({ weatherStation: {status: STATUS}})} />);
