@@ -122,6 +122,13 @@ body {
     text-align: center;
     margin-top: 10px;
     font-size: 14px;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    background-color: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
   }
   
   &.invalid-city .error {
@@ -227,15 +234,28 @@ body {
     }
   }
 }
-      text-transform: uppercase;
-    }
-  }
 
-  .weather-dashboard {
+.weather-dashboard {
+  text-align: center;
+
+  .error {
+    display: none;
+    color: var(--error-color);
     text-align: center;
-
-    .error {
-      display: none;
+    margin-top: 10px;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    background-color: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  &.invalid-city .error {
+    display: block;
+  }
     }
 
     section.controls {

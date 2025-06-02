@@ -3,7 +3,14 @@ import { connect } from "react-redux";
 import { fetchData } from "./actions/weatherStation";
 import WeatherForecast from './components/WeatherForecast';
 
-const App = ({ dispatch, forecast }) => {
+/**
+ * App component - Main application entry point
+ * Handles initial data loading using geolocation when available
+ * @param {Object} props - Component props
+ * @param {Function} props.dispatch - Redux dispatch function
+ * @param {string} props.status - Current status of the data fetch
+ */
+const App = ({ dispatch, status }) => {
   // Fetches data by using geolocation. If the user blocks, or if the browser does not support the API, 
   // fallsback to default location of London
   useEffect(() => {
@@ -15,34 +22,42 @@ const App = ({ dispatch, forecast }) => {
           }, 
           (error) => {
             if(error.code === error.PERMISSION_DENIED) {
-              console.error("Error detecting location.");
+              console.error("Error detecting location: Permission denied");
+            } else {
+              console.error(`Error detecting location: ${error.message}`);
             }
             resolve(null);
-          }
+          },
+          { timeout: 10000 } // 10 second timeout for geolocation
         );
       } else {
+        console.warn("Geolocation not supported by this browser");
         resolve(null);
       }
     });
 
     detectLocation.then((location) => {
       dispatch(fetchData(location));
-    }).catch(() => {
+    }).catch((err) => {
+      console.error("Failed to get location, falling back to default city:", err);
       dispatch(fetchData("london"));
     });
   }, [dispatch]);
 
   return (
     <>
-      {forecast === null ? (
+      {status === "initial" ? (
         <div className="loading">
-          <div className="spinner"></div>
+          <div className="spinner" aria-label="Initializing application"></div>
         </div>
       ) : (
         <div>
-          <WeatherForecast data={forecast} />
+          <WeatherForecast />
           <div className="fork">
-            <a href="https://github.com/dhairyadev26/WeatherForecast" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/dhairyadev26/WeatherForecast" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               aria-label="View source code on GitHub">
               Fork it on Github
             </a>
           </div> 
@@ -53,7 +68,7 @@ const App = ({ dispatch, forecast }) => {
 };
 
 const mapStateToProps = (state) => ({
-  forecast: state.weatherStation.data
+  status: state.weatherStation.status
 });
 
 export default connect(mapStateToProps)(App);

@@ -30,12 +30,74 @@ const createRequestUrl = (location, unit = DEFAULT_TEMPERATURE_UNIT) => {
 };
 
 /**
+ * Log error details to the console for debugging
+ * @param {Error} error - The error object
+ * @param {string} location - The location that was being requested
+ * @returns {string} Error message for user display
+ */
+const handleApiError = (error, location) => {
+  let errorMessage = ERROR_MESSAGES.API_ERROR;
+  let errorDetails = {};
+  
+  if (error.response) {
+    // Server responded with an error status
+    const { status, data } = error.response;
+    errorDetails = {
+      status,
+      statusText: error.response.statusText,
+      data,
+      endpoint: error.config.url
+    };
+    
+    if (status === 404) {
+      errorMessage = `${ERROR_MESSAGES.LOCATION_NOT_FOUND} (${location})`;
+    } else if (status === 401) {
+      errorMessage = "API key is invalid or missing.";
+    } else if (status === 429) {
+      errorMessage = "API rate limit exceeded. Please try again later.";
+    } else if (status >= 500) {
+      errorMessage = "Weather service is currently unavailable. Please try again later.";
+    }
+  } else if (error.request) {
+    // Request made but no response received (network error)
+    errorMessage = "Network error. Please check your connection.";
+    errorDetails = {
+      request: error.request,
+      message: error.message
+    };
+  } else {
+    // Error in setting up the request
+    errorMessage = "An unexpected error occurred.";
+    errorDetails = {
+      message: error.message
+    };
+  }
+  
+  // Log detailed error information for debugging
+  console.error("Weather API Error:", {
+    message: errorMessage,
+    location,
+    details: errorDetails,
+    originalError: error
+  });
+  
+  return errorMessage;
+};
+
+/**
  * Fetch weather forecast data by location (city name or coordinates)
  * @param {string|Object} location - City name or coordinates object
  * @param {string} unit - Temperature unit (metric or imperial)
  * @returns {Function} Thunk function
  */
 export const fetchData = (location, unit = DEFAULT_TEMPERATURE_UNIT) => async (dispatch) => {
+  // Input validation
+  if (!location) {
+    const errorMessage = "Location is required";
+    dispatch({ type: FETCH_DATA_REJECTED, payload: errorMessage });
+    return Promise.reject(new Error(errorMessage));
+  }
+  
   // Dispatch request action to indicate loading state
   dispatch({ type: FETCH_DATA_REQUEST });
   
@@ -43,8 +105,22 @@ export const fetchData = (location, unit = DEFAULT_TEMPERATURE_UNIT) => async (d
     // Create request URL based on location type
     const requestUrl = createRequestUrl(location, unit);
     
+    // Configure timeout and headers
+    const config = {
+      timeout: 10000, // 10 second timeout
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+    
     // Make API request
-    const response = await axios.get(requestUrl);
+    const response = await axios.get(requestUrl, config);
+    
+    // Validate response data
+    if (!response.data || !response.data.list || response.data.list.length === 0) {
+      throw new Error("Invalid data received from weather service");
+    }
     
     // Dispatch success action with data
     dispatch({
@@ -54,18 +130,8 @@ export const fetchData = (location, unit = DEFAULT_TEMPERATURE_UNIT) => async (d
     
     return response.data;
   } catch (error) {
-    // Handle different error types
-    let errorMessage = ERROR_MESSAGES.API_ERROR;
-    
-    if (error.response) {
-      // Server responded with an error status
-      if (error.response.status === 404) {
-        errorMessage = ERROR_MESSAGES.LOCATION_NOT_FOUND;
-      }
-    } else if (error.request) {
-      // Request made but no response received (network error)
-      errorMessage = "Network error. Please check your connection.";
-    }
+    // Process error and generate user-friendly message
+    const errorMessage = handleApiError(error, location);
     
     // Dispatch error action
     dispatch({
@@ -73,8 +139,7 @@ export const fetchData = (location, unit = DEFAULT_TEMPERATURE_UNIT) => async (d
       payload: errorMessage
     });
     
-    // Re-throw for component-level error handling if needed
-    throw new Error(errorMessage);
+    return Promise.reject(new Error(errorMessage));
   }
 };
 

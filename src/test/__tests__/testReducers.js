@@ -1,34 +1,107 @@
 import React from "react";
-
-import * as actions from "../../actions/weatherStation";
+import * as actionTypes from "../../constants/ActionTypes";
 import reducer from "../../reducers";
-
-import { FETCH_DATA_FULFILLED, FETCH_DATA_REJECTED } from "../../constants/ActionTypes";
-
 import mockData from "./data/forecast.json";
 
-describe("data reducer", () => {
+describe("Weather Station Reducer", () => {
   
   it("should return initial state", () => {
-    expect(reducer(undefined, {})).toEqual({"weatherStation": {"data": null, "status": null}});
+    expect(reducer(undefined, {})).toEqual({
+      "weatherStation": {
+        "data": null,
+        "status": "initial",
+        "error": null,
+        "lastUpdated": null
+      }
+    });
+  });
+
+  it("should handle FETCH_DATA_REQUEST", () => {
+    const action = {
+      type: actionTypes.FETCH_DATA_REQUEST
+    };
+
+    expect(reducer({}, action)).toEqual({
+      "weatherStation": {
+        "data": null,
+        "status": "loading",
+        "error": null,
+        "lastUpdated": null
+      }
+    });
   });
 
   it("should handle FETCH_DATA_FULFILLED", () => {
-    const startFetch = {
-      type: FETCH_DATA_FULFILLED,
+    const action = {
+      type: actionTypes.FETCH_DATA_FULFILLED,
       payload: mockData.weatherStation.data
     };
 
-    expect(reducer({}, startFetch)).toEqual(mockData);
+    const result = reducer({}, action);
+    
+    expect(result.weatherStation.data).toEqual(mockData.weatherStation.data);
+    expect(result.weatherStation.status).toEqual("success");
+    expect(result.weatherStation.error).toBeNull();
+    expect(result.weatherStation.lastUpdated).toBeInstanceOf(Date);
   });
 
-  it("should handle FETCH_DATA_REJECTED", () => {
-    const startFetch = {
-      type: FETCH_DATA_REJECTED,
+  it("should handle FETCH_DATA_REJECTED with error message", () => {
+    const errorMsg = "City not found";
+    const action = {
+      type: actionTypes.FETCH_DATA_REJECTED,
+      payload: { message: errorMsg }
+    };
+
+    expect(reducer({}, action)).toEqual({
+      "weatherStation": {
+        "data": null,
+        "status": "error",
+        "error": errorMsg,
+        "lastUpdated": null
+      }
+    });
+  });
+
+  it("should handle FETCH_DATA_REJECTED with default error", () => {
+    const action = {
+      type: actionTypes.FETCH_DATA_REJECTED,
       payload: {}
     };
 
-    expect(reducer({}, startFetch)).toEqual({"weatherStation": {"data": null, "status": "failed"}});
+    expect(reducer({}, action)).toEqual({
+      "weatherStation": {
+        "data": null,
+        "status": "error",
+        "error": "Failed to fetch weather data",
+        "lastUpdated": null
+      }
+    });
+  });
+  
+  it("should preserve existing data when an error occurs", () => {
+    // Initial state with data
+    const initialState = {
+      weatherStation: {
+        data: mockData.weatherStation.data,
+        status: "success",
+        error: null,
+        lastUpdated: new Date()
+      }
+    };
+    
+    // Error action
+    const action = {
+      type: actionTypes.FETCH_DATA_REJECTED,
+      payload: { message: "Network error" }
+    };
+    
+    const result = reducer(initialState, action);
+    
+    // Status and error should be updated but data should be preserved
+    expect(result.weatherStation.status).toEqual("error");
+    expect(result.weatherStation.error).toEqual("Network error");
+    expect(result.weatherStation.data).toEqual(mockData.weatherStation.data);
+    expect(result.weatherStation.lastUpdated).toEqual(initialState.weatherStation.lastUpdated);
   });
 });
 

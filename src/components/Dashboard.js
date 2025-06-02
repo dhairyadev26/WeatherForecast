@@ -91,6 +91,7 @@ ErrorMessage.propTypes = {
 const Dashboard = ({ city }) => {
   const dispatch = useDispatch();
   const status = useSelector((state) => state.weatherStation.status);
+  const error = useSelector((state) => state.weatherStation.error);
 
   const handleSearch = useCallback((searchTerm) => {
     dispatch(fetchData(searchTerm));
@@ -98,6 +99,7 @@ const Dashboard = ({ city }) => {
 
   const isError = status === "error";
   const wrapperClass = isError ? "weather-dashboard invalid-city" : "weather-dashboard";
+  const errorMessage = error || "Please enter valid city name!";
 
   return (
     <div className={wrapperClass} data-testid="weather-dashboard">
@@ -107,7 +109,7 @@ const Dashboard = ({ city }) => {
       </section>
       <ErrorMessage 
         visible={isError} 
-        message="Please enter valid city name!" 
+        message={errorMessage} 
       />
     </div>
   );

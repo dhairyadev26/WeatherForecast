@@ -80,10 +80,8 @@ describe("Dashboard Component", () => {
     // Click search button
     fireEvent.click(button);
     
-    // Check if the action was dispatched
-    expect(store.getActions()).toEqual([
-      { type: "FETCH_DATA_REQUEST" }
-    ]);
+    // Check if the action was dispatched with correct city
+    expect(fetchData).toHaveBeenCalledWith("Paris");
   });
 
   test("dispatches fetchData action when Enter key is pressed", () => {
@@ -101,10 +99,24 @@ describe("Dashboard Component", () => {
     // Press Enter key
     fireEvent.keyPress(input, { key: "Enter", code: 13, charCode: 13 });
     
-    // Check if the action was dispatched
-    expect(store.getActions()).toEqual([
-      { type: "FETCH_DATA_REQUEST" }
-    ]);
+    // Check if the action was dispatched with correct city
+    expect(fetchData).toHaveBeenCalledWith("Berlin");
+  });
+
+  test("does not dispatch action when input is empty", () => {
+    render(
+      <Provider store={store}>
+        <Dashboard city="London" />
+      </Provider>
+    );
+    
+    const button = screen.getByRole("button");
+    
+    // Click search button without entering text
+    fireEvent.click(button);
+    
+    // Action should not be dispatched
+    expect(fetchData).not.toHaveBeenCalled();
   });
 
   test("shows error message when status is error", () => {
@@ -123,15 +135,47 @@ describe("Dashboard Component", () => {
       </Provider>
     );
     
+    const errorMsg = screen.getByText("Location not found");
+    expect(errorMsg).toBeInTheDocument();
+    expect(errorMsg).toBeVisible();
+  });
+
+  test("shows default error message when error is null but status is error", () => {
+    // Create store with error status but no message
+    const errorStore = mockStore({
+      weatherStation: {
+        status: "error",
+        data: null,
+        error: null
+      }
+    });
+    
+    render(
+      <Provider store={errorStore}>
+        <Dashboard city="InvalidCity" />
+      </Provider>
+    );
+    
     const errorMsg = screen.getByText("Please enter valid city name!");
     expect(errorMsg).toBeInTheDocument();
     expect(errorMsg).toBeVisible();
   });
-});
 
-  it("should receive city prop", () => {
-    const wrapper = shallow(<Dashboard city="london" store={mockStore({ weatherStation: {status: STATUS}})} />);
-    expect(wrapper.prop("city")).toBeDefined();
+  test("hides error message when status is not error", () => {
+    render(
+      <Provider store={store}>
+        <Dashboard city="London" />
+      </Provider>
+    );
+    
+    const errorElements = screen.queryAllByText(
+      content => content.includes("enter valid city") || content.includes("not found")
+    );
+    
+    // No visible error message should be found
+    errorElements.forEach(element => {
+      expect(element).not.toBeVisible();
+    });
   });
 });
 

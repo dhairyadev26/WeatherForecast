@@ -1,23 +1,48 @@
-import React, { Component } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 import ForecastTiles from "./ForecastTiles";
 import Dashboard from "./Dashboard";
 
-const WeatherForecast = ({ data }) => {
-
-    const { city, list } = data;
-    const { name } = city;
+/**
+ * WeatherForecast component that displays the complete weather forecast UI
+ * Including the dashboard and forecast tiles
+ * @param {Object} props - Component props
+ * @param {Object} props.data - Weather data object
+ * @param {string} props.status - Current status of the weather data fetch
+ */
+const WeatherForecast = ({ data, status }) => {
+  // Only show forecast tiles if we have data and no errors
+  const showForecast = data && data.list && data.list.length > 0 && status === "success";
   
-    return (
-      <div className="weather-forecast-wrapper">
-        <Dashboard city={name} />
-        <ForecastTiles forecasts={list} />
-      </div>
-    );
+  // Get city name if available
+  const cityName = data && data.city ? data.city.name : "";
+  
+  return (
+    <div className="weather-forecast-wrapper">
+      <Dashboard city={cityName} />
+      {showForecast && <ForecastTiles forecasts={data.list} />}
+      {status === "loading" && (
+        <div className="loading">
+          <div className="spinner" aria-label="Loading weather data"></div>
+        </div>
+      )}
+    </div>
+  );
 };
 
-export default WeatherForecast;
+WeatherForecast.propTypes = {
+  data: PropTypes.object,
+  status: PropTypes.string
+};
+
+const mapStateToProps = (state) => ({
+  data: state.weatherStation.data,
+  status: state.weatherStation.status
+});
+
+export default connect(mapStateToProps)(WeatherForecast);
 
 
 
