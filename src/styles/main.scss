@@ -377,7 +377,8 @@ body {
 
       &.expanded {
         .detailed-info {
-          height: 100px;
+          height: auto;
+          max-height: 350px;
         }
 
         :after {
@@ -396,33 +397,97 @@ body {
         -o-transition: height 0.20s ease-in;
         transition: height 0.20s ease-in;
         background: #283593;
+        overflow-y: auto;
+        max-height: 350px;
 
-        .hourly {
-          display: flex;
-          padding: 25px 0 20px 10px;
-
-          .hourly-info {
+        .hourly-container {
+          padding: 15px;
+          
+          .hourly-title {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 500;
+          }
+          
+          .hourly-forecast {
             display: flex;
-            flex-direction: column;
-            width: 20%;
-            align-items: center;
-            justify-content: center;
-            overflow-x: scroll;
-
-            .hour-temperature {
-              font-size: 16px;
-              font-weight: bold;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            
+            .hourly-info {
+              display: flex;
+              flex-direction: column;
+              width: calc(33.33% - 10px);
+              margin-bottom: 15px;
+              background-color: rgba(255, 255, 255, 0.05);
+              border-radius: var(--border-radius);
+              padding: 10px;
+              
+              .hour-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                padding-bottom: 5px;
+                
+                .hour-of-the-day {
+                  font-weight: 500;
+                  font-size: 14px;
+                  color: #fff;
+                }
+                
+                .weather-icon img {
+                  width: 40px;
+                  height: 40px;
+                }
+              }
+              
+              .hour-details {
+                display: flex;
+                flex-direction: column;
+                
+                .hour-temperature {
+                  margin-bottom: 8px;
+                  
+                  .temp-value {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #fff;
+                    display: block;
+                  }
+                  
+                  .feels-like {
+                    font-size: 12px;
+                    color: #c5cae9;
+                  }
+                }
+                
+                .weather-details {
+                  font-size: 12px;
+                  
+                  div {
+                    margin-bottom: 4px;
+                    color: #c5cae9;
+                  }
+                  
+                  .weather-description {
+                    text-transform: capitalize;
+                    color: #fff;
+                    margin-bottom: 6px;
+                  }
+                }
+              }
             }
-
-            .hour-of-the-day {
-              font-weight: normal;
-              font-size: 12px;
-              color: #c5cae9;
-            }
-
-            div {
-              padding: 5px 0;
-            }
+          }
+          
+          .no-data {
+            text-align: center;
+            color: #c5cae9;
+            padding: 20px 0;
+            font-style: italic;
           }
         }
       }
