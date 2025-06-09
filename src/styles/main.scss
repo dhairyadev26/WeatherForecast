@@ -256,6 +256,53 @@ body {
   &.invalid-city .error {
     display: block;
   }
+  
+  .unit-toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 15px auto;
+    
+    .toggle-button-group {
+      display: flex;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      border: 1px solid var(--primary-color);
+      
+      .toggle-button {
+        background-color: #fff;
+        color: var(--primary-color);
+        border: none;
+        padding: 8px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          background-color: rgba(33, 150, 243, 0.1);
+        }
+        
+        &.active {
+          background-color: var(--primary-color);
+          color: white;
+        }
+        
+        &:focus {
+          outline: none;
+          box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.4);
+          position: relative;
+          z-index: 1;
+        }
+      }
+    }
+    
+    .toggle-label {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+  }
     }
 
     section.controls {

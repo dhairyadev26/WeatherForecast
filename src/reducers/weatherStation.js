@@ -1,15 +1,18 @@
 import { 
   FETCH_DATA_REQUEST,
   FETCH_DATA_FULFILLED, 
-  FETCH_DATA_REJECTED 
+  FETCH_DATA_REJECTED,
+  SET_TEMPERATURE_UNIT
 } from "../constants/ActionTypes";
+import { DEFAULT_TEMPERATURE_UNIT } from "../constants/generalConstants";
 
 // Initial state for the weather station reducer
 const initialState = {
   data: null,
   status: "idle", // idle, loading, success, or error
   error: null,
-  lastUpdated: null
+  lastUpdated: null,
+  temperatureUnit: DEFAULT_TEMPERATURE_UNIT
 };
 
 /**
@@ -43,6 +46,12 @@ export default function weatherStationReducer(state = initialState, action) {
         status: "error",
         error: action.payload,
         lastUpdated: new Date().toISOString()
+      };
+    
+    case SET_TEMPERATURE_UNIT:
+      return {
+        ...state,
+        temperatureUnit: action.payload
       };
       
     default:

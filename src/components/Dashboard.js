@@ -1,7 +1,8 @@
 import React, { useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { fetchData } from "../actions/weatherStation";
+import { fetchData, setTemperatureUnit } from "../actions/weatherStation";
+import UnitToggle from "./UnitToggle";
 
 /**
  * Header component displays the application title
@@ -92,10 +93,15 @@ const Dashboard = ({ city }) => {
   const dispatch = useDispatch();
   const status = useSelector((state) => state.weatherStation.status);
   const error = useSelector((state) => state.weatherStation.error);
+  const temperatureUnit = useSelector((state) => state.weatherStation.temperatureUnit);
 
   const handleSearch = useCallback((searchTerm) => {
-    dispatch(fetchData(searchTerm));
-  }, [dispatch]);
+    dispatch(fetchData(searchTerm, temperatureUnit));
+  }, [dispatch, temperatureUnit]);
+
+  const handleUnitToggle = useCallback((unit) => {
+    dispatch(setTemperatureUnit(unit, city));
+  }, [dispatch, city]);
 
   const isError = status === "error";
   const wrapperClass = isError ? "weather-dashboard invalid-city" : "weather-dashboard";
@@ -106,6 +112,7 @@ const Dashboard = ({ city }) => {
       <Header />
       <section className="controls">
         <SearchBar defaultCity={city} onSearch={handleSearch} />
+        <UnitToggle unit={temperatureUnit} onToggle={handleUnitToggle} />
       </section>
       <ErrorMessage 
         visible={isError} 

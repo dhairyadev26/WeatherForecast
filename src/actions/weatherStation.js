@@ -1,7 +1,8 @@
 import { 
   FETCH_DATA_REQUEST,
   FETCH_DATA_FULFILLED, 
-  FETCH_DATA_REJECTED 
+  FETCH_DATA_REJECTED,
+  SET_TEMPERATURE_UNIT
 } from "../constants/ActionTypes";
 import { 
   API_BASE_URL,
@@ -141,6 +142,27 @@ export const fetchData = (location, unit = DEFAULT_TEMPERATURE_UNIT) => async (d
     
     return Promise.reject(new Error(errorMessage));
   }
+};
+
+/**
+ * Set the temperature unit (Celsius or Fahrenheit)
+ * @param {string} unit - The unit to set (metric or imperial)
+ * @param {string|Object} currentLocation - Current location to refresh data with new unit
+ * @returns {Function} Thunk function that updates unit and refreshes data
+ */
+export const setTemperatureUnit = (unit, currentLocation) => (dispatch) => {
+  // First, update the temperature unit in the store
+  dispatch({
+    type: SET_TEMPERATURE_UNIT,
+    payload: unit
+  });
+  
+  // Then, if we have a current location, refresh the data with the new unit
+  if (currentLocation) {
+    return dispatch(fetchData(currentLocation, unit));
+  }
+  
+  return Promise.resolve();
 };
 
 

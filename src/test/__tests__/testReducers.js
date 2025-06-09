@@ -2,6 +2,7 @@ import React from "react";
 import * as actionTypes from "../../constants/ActionTypes";
 import reducer from "../../reducers";
 import mockData from "./data/forecast.json";
+import { TEMPERATURE_UNITS } from "../../constants/generalConstants";
 
 describe("Weather Station Reducer", () => {
   
@@ -9,9 +10,10 @@ describe("Weather Station Reducer", () => {
     expect(reducer(undefined, {})).toEqual({
       "weatherStation": {
         "data": null,
-        "status": "initial",
+        "status": "idle",
         "error": null,
-        "lastUpdated": null
+        "lastUpdated": null,
+        "temperatureUnit": TEMPERATURE_UNITS.CELSIUS
       }
     });
   });
@@ -26,7 +28,8 @@ describe("Weather Station Reducer", () => {
         "data": null,
         "status": "loading",
         "error": null,
-        "lastUpdated": null
+        "lastUpdated": null,
+        "temperatureUnit": TEMPERATURE_UNITS.CELSIUS
       }
     });
   });
@@ -101,6 +104,34 @@ describe("Weather Station Reducer", () => {
     expect(result.weatherStation.status).toEqual("error");
     expect(result.weatherStation.error).toEqual("Network error");
     expect(result.weatherStation.data).toEqual(mockData.weatherStation.data);
+    expect(result.weatherStation.lastUpdated).toEqual(initialState.weatherStation.lastUpdated);
+  });
+  
+  it("should handle SET_TEMPERATURE_UNIT action", () => {
+    // Initial state with Celsius
+    const initialState = {
+      weatherStation: {
+        data: mockData.weatherStation.data,
+        status: "success",
+        error: null,
+        lastUpdated: new Date(),
+        temperatureUnit: TEMPERATURE_UNITS.CELSIUS
+      }
+    };
+    
+    // Action to change unit to Fahrenheit
+    const action = {
+      type: actionTypes.SET_TEMPERATURE_UNIT,
+      payload: TEMPERATURE_UNITS.FAHRENHEIT
+    };
+    
+    const result = reducer(initialState, action);
+    
+    // Only temperatureUnit should be updated
+    expect(result.weatherStation.temperatureUnit).toEqual(TEMPERATURE_UNITS.FAHRENHEIT);
+    expect(result.weatherStation.status).toEqual("success");
+    expect(result.weatherStation.data).toEqual(mockData.weatherStation.data);
+    expect(result.weatherStation.error).toBeNull();
     expect(result.weatherStation.lastUpdated).toEqual(initialState.weatherStation.lastUpdated);
   });
 });

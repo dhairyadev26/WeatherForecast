@@ -9,8 +9,9 @@ import WeatherForecast from './components/WeatherForecast';
  * @param {Object} props - Component props
  * @param {Function} props.dispatch - Redux dispatch function
  * @param {string} props.status - Current status of the data fetch
+ * @param {string} props.temperatureUnit - Current temperature unit (metric or imperial)
  */
-const App = ({ dispatch, status }) => {
+const App = ({ dispatch, status, temperatureUnit }) => {
   // Fetches data by using geolocation. If the user blocks, or if the browser does not support the API, 
   // fallsback to default location of London
   useEffect(() => {
@@ -37,12 +38,12 @@ const App = ({ dispatch, status }) => {
     });
 
     detectLocation.then((location) => {
-      dispatch(fetchData(location));
+      dispatch(fetchData(location, temperatureUnit));
     }).catch((err) => {
       console.error("Failed to get location, falling back to default city:", err);
-      dispatch(fetchData("london"));
+      dispatch(fetchData("london", temperatureUnit));
     });
-  }, [dispatch]);
+  }, [dispatch, temperatureUnit]);
 
   return (
     <>
@@ -68,7 +69,8 @@ const App = ({ dispatch, status }) => {
 };
 
 const mapStateToProps = (state) => ({
-  status: state.weatherStation.status
+  status: state.weatherStation.status,
+  temperatureUnit: state.weatherStation.temperatureUnit
 });
 
 export default connect(mapStateToProps)(App);

@@ -3,15 +3,17 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { fetchData } from "../../actions/weatherStation";
+import { fetchData, setTemperatureUnit } from "../../actions/weatherStation";
 import Dashboard from "../../components/Dashboard";
+import { TEMPERATURE_UNITS } from "../../constants/generalConstants";
 
 // Mock redux store
 const mockStore = configureStore([]);
 
 // Mock the fetchData action
 jest.mock("../../actions/weatherStation", () => ({
-  fetchData: jest.fn()
+  fetchData: jest.fn(),
+  setTemperatureUnit: jest.fn()
 }));
 
 describe("Dashboard Component", () => {
@@ -23,12 +25,14 @@ describe("Dashboard Component", () => {
       weatherStation: {
         status: "success",
         data: null,
-        error: null
+        error: null,
+        temperatureUnit: TEMPERATURE_UNITS.CELSIUS
       }
     });
     
     // Clear mock calls between tests
     fetchData.mockClear();
+    setTemperatureUnit.mockClear();
   });
 
   test("renders the dashboard with correct heading", () => {
@@ -125,7 +129,8 @@ describe("Dashboard Component", () => {
       weatherStation: {
         status: "error",
         data: null,
-        error: "Location not found"
+        error: "Location not found",
+        temperatureUnit: TEMPERATURE_UNITS.CELSIUS
       }
     });
     
@@ -146,7 +151,8 @@ describe("Dashboard Component", () => {
       weatherStation: {
         status: "error",
         data: null,
-        error: null
+        error: null,
+        temperatureUnit: TEMPERATURE_UNITS.CELSIUS
       }
     });
     
@@ -176,6 +182,58 @@ describe("Dashboard Component", () => {
     errorElements.forEach(element => {
       expect(element).not.toBeVisible();
     });
+  });
+  
+  test("renders the unit toggle component", () => {
+    render(
+      <Provider store={store}>
+        <Dashboard city="London" />
+      </Provider>
+    );
+    
+    // Check for toggle buttons
+    expect(screen.getByText("°C")).toBeInTheDocument();
+    expect(screen.getByText("°F")).toBeInTheDocument();
+  });
+  
+  test("calls setTemperatureUnit when unit toggle is clicked", () => {
+    render(
+      <Provider store={store}>
+        <Dashboard city="London" />
+      </Provider>
+    );
+    
+    // Click on Fahrenheit button
+    fireEvent.click(screen.getByText("°F"));
+    
+    // Check if action was dispatched with correct values
+    expect(setTemperatureUnit).toHaveBeenCalledWith(TEMPERATURE_UNITS.FAHRENHEIT, "London");
+  });
+  
+  test("unit toggle button reflects current unit", () => {
+    // Create store with Fahrenheit unit
+    const fahrenheitStore = mockStore({
+      weatherStation: {
+        status: "success",
+        data: null,
+        error: null,
+        temperatureUnit: TEMPERATURE_UNITS.FAHRENHEIT
+      }
+    });
+    
+    render(
+      <Provider store={fahrenheitStore}>
+        <Dashboard city="London" />
+      </Provider>
+    );
+    
+    // Fahrenheit button should be active
+    const fahrenheitButton = screen.getByText("°F").closest("button");
+    expect(fahrenheitButton).toHaveClass("active");
+    
+    // Celsius button should not be active
+    const celsiusButton = screen.getByText("°C").closest("button");
+    expect(celsiusButton).not.toHaveClass("active");
   });
 });
 
