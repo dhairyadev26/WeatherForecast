@@ -15,15 +15,16 @@ import { LAYOUT_TYPES } from "../constants/generalConstants";
  * @param {Object} props.data - Weather data object
  * @param {string} props.status - Current status of the weather data fetch
  * @param {string} props.temperatureUnit - Current temperature unit (metric or imperial)
+ * @param {string} props.currentLocation - Current location name
  */
-const WeatherForecast = ({ data, status, temperatureUnit }) => {
+const WeatherForecast = ({ data, status, temperatureUnit, currentLocation }) => {
   const [viewLayout, setViewLayout] = useState(LAYOUT_TYPES.GRID);
   
   // Only show forecast tiles if we have data and no errors
   const showForecast = data && data.list && data.list.length > 0 && status === "success";
   
-  // Get city name if available
-  const cityName = data && data.city ? data.city.name : "";
+  // Get city name - prefer Redux current location over API response
+  const cityName = currentLocation || (data && data.city ? data.city.name : "");
   
   // Handle layout change
   const handleLayoutChange = (newLayout) => {
@@ -34,7 +35,7 @@ const WeatherForecast = ({ data, status, temperatureUnit }) => {
     <ResponsiveWrapper>
       {({ viewportSize, isMobile, isTablet }) => (
         <div className={`weather-forecast-wrapper viewport-${viewportSize} layout-${viewLayout}`}>
-          <Dashboard city={cityName} />
+          <Dashboard />
           
           {isMobile && (
             <div className="view-controls">
@@ -67,13 +68,15 @@ const WeatherForecast = ({ data, status, temperatureUnit }) => {
 WeatherForecast.propTypes = {
   data: PropTypes.object,
   status: PropTypes.string,
-  temperatureUnit: PropTypes.string
+  temperatureUnit: PropTypes.string,
+  currentLocation: PropTypes.string
 };
 
 const mapStateToProps = (state) => ({
   data: state.weatherStation.data,
   status: state.weatherStation.status,
-  temperatureUnit: state.weatherStation.temperatureUnit
+  temperatureUnit: state.weatherStation.temperatureUnit,
+  currentLocation: state.weatherStation.currentLocation
 });
 
 export default connect(mapStateToProps)(WeatherForecast);

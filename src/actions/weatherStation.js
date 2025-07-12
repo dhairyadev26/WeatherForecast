@@ -2,7 +2,9 @@ import {
   FETCH_DATA_REQUEST,
   FETCH_DATA_FULFILLED, 
   FETCH_DATA_REJECTED,
-  SET_TEMPERATURE_UNIT
+  SET_TEMPERATURE_UNIT,
+  SET_LOCATION,
+  ADD_RECENT_LOCATION
 } from "../constants/ActionTypes";
 import { 
   API_BASE_URL,
@@ -164,6 +166,39 @@ export const setTemperatureUnit = (unit, currentLocation) => (dispatch) => {
   
   return Promise.resolve();
 };
+
+/**
+ * Set the current location and fetch data for it
+ * @param {string} location - The location name to set and fetch data for
+ * @param {string} unit - Temperature unit to use for fetching data
+ * @returns {Function} Thunk function that updates location, adds it to recent locations, and fetches data
+ */
+export const setLocation = (location, unit = DEFAULT_TEMPERATURE_UNIT) => (dispatch) => {
+  // Update the current location
+  dispatch({
+    type: SET_LOCATION,
+    payload: location
+  });
+  
+  // Add to recent locations
+  dispatch({
+    type: ADD_RECENT_LOCATION,
+    payload: location
+  });
+  
+  // Fetch weather data for the new location
+  return dispatch(fetchData(location, unit));
+};
+
+/**
+ * Add a location to the recent locations list
+ * @param {string} location - The location to add to recent locations
+ * @returns {Object} Action object
+ */
+export const addRecentLocation = (location) => ({
+  type: ADD_RECENT_LOCATION,
+  payload: location
+});
 
 
 

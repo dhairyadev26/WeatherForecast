@@ -15,5 +15,7 @@ export const SET_DISPLAY_MODE = "SET_DISPLAY_MODE";
 // User preferences action types
 export const SET_DEFAULT_LOCATION = "SET_DEFAULT_LOCATION";
 export const TOGGLE_DARK_MODE = "TOGGLE_DARK_MODE";
+export const SET_LOCATION = "SET_LOCATION";
+export const ADD_RECENT_LOCATION = "ADD_RECENT_LOCATION";
 
 /* eslint-enable */

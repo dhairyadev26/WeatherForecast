@@ -1,8 +1,9 @@
 import React, { useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { fetchData, setTemperatureUnit } from "../actions/weatherStation";
+import { fetchData, setTemperatureUnit, setLocation } from "../actions/weatherStation";
 import UnitToggle from "./UnitToggle";
+import LocationSearch from "./LocationSearch";
 
 /**
  * Header component displays the application title
@@ -85,23 +86,23 @@ ErrorMessage.propTypes = {
 
 /**
  * Dashboard component that serves as the main control panel
- * Combines Header, SearchBar and error messaging
- * @param {Object} props - Component props
- * @param {string} props.city - Current city name
+ * Combines Header, LocationSearch and error messaging
  */
-const Dashboard = ({ city }) => {
+const Dashboard = () => {
   const dispatch = useDispatch();
   const status = useSelector((state) => state.weatherStation.status);
   const error = useSelector((state) => state.weatherStation.error);
   const temperatureUnit = useSelector((state) => state.weatherStation.temperatureUnit);
+  const recentLocations = useSelector((state) => state.weatherStation.recentLocations);
+  const currentLocation = useSelector((state) => state.weatherStation.currentLocation);
 
   const handleSearch = useCallback((searchTerm) => {
-    dispatch(fetchData(searchTerm, temperatureUnit));
+    dispatch(setLocation(searchTerm, temperatureUnit));
   }, [dispatch, temperatureUnit]);
 
   const handleUnitToggle = useCallback((unit) => {
-    dispatch(setTemperatureUnit(unit, city));
-  }, [dispatch, city]);
+    dispatch(setTemperatureUnit(unit, currentLocation));
+  }, [dispatch, currentLocation]);
 
   const isError = status === "error";
   const wrapperClass = isError ? "weather-dashboard invalid-city" : "weather-dashboard";
@@ -111,7 +112,11 @@ const Dashboard = ({ city }) => {
     <div className={wrapperClass} data-testid="weather-dashboard">
       <Header />
       <section className="controls">
-        <SearchBar defaultCity={city} onSearch={handleSearch} />
+        <LocationSearch 
+          onSearch={handleSearch} 
+          defaultLocation={currentLocation} 
+          recentLocations={recentLocations} 
+        />
         <UnitToggle unit={temperatureUnit} onToggle={handleUnitToggle} />
       </section>
       <ErrorMessage 
@@ -122,13 +127,7 @@ const Dashboard = ({ city }) => {
   );
 };
 
-Dashboard.propTypes = {
-  city: PropTypes.string
-};
-
-Dashboard.defaultProps = {
-  city: "London"
-};
+Dashboard.propTypes = {};
 
 export default Dashboard;
 

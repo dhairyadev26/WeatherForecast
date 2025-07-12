@@ -2,9 +2,11 @@ import {
   FETCH_DATA_REQUEST,
   FETCH_DATA_FULFILLED, 
   FETCH_DATA_REJECTED,
-  SET_TEMPERATURE_UNIT
+  SET_TEMPERATURE_UNIT,
+  SET_LOCATION,
+  ADD_RECENT_LOCATION
 } from "../constants/ActionTypes";
-import { DEFAULT_TEMPERATURE_UNIT } from "../constants/generalConstants";
+import { DEFAULT_TEMPERATURE_UNIT, DEFAULT_LOCATION } from "../constants/generalConstants";
 
 // Initial state for the weather station reducer
 const initialState = {
@@ -12,7 +14,9 @@ const initialState = {
   status: "idle", // idle, loading, success, or error
   error: null,
   lastUpdated: null,
-  temperatureUnit: DEFAULT_TEMPERATURE_UNIT
+  temperatureUnit: DEFAULT_TEMPERATURE_UNIT,
+  currentLocation: DEFAULT_LOCATION,
+  recentLocations: [DEFAULT_LOCATION]
 };
 
 /**
@@ -52,6 +56,30 @@ export default function weatherStationReducer(state = initialState, action) {
       return {
         ...state,
         temperatureUnit: action.payload
+      };
+      
+    case SET_LOCATION:
+      return {
+        ...state,
+        currentLocation: action.payload
+      };
+      
+    case ADD_RECENT_LOCATION:
+      // Don't add duplicates to recent locations
+      if (state.recentLocations.includes(action.payload)) {
+        // Move the location to the front of the list if it already exists
+        const filteredLocations = state.recentLocations.filter(
+          location => location !== action.payload
+        );
+        return {
+          ...state,
+          recentLocations: [action.payload, ...filteredLocations].slice(0, 5) // Keep only the 5 most recent
+        };
+      }
+      
+      return {
+        ...state,
+        recentLocations: [action.payload, ...state.recentLocations].slice(0, 5) // Keep only the 5 most recent
       };
       
     default:
