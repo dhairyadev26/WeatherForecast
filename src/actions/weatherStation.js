@@ -4,7 +4,10 @@ import {
   FETCH_DATA_REJECTED,
   SET_TEMPERATURE_UNIT,
   SET_LOCATION,
-  ADD_RECENT_LOCATION
+  ADD_RECENT_LOCATION,
+  GEOLOCATION_REQUEST,
+  GEOLOCATION_SUCCESS,
+  GEOLOCATION_ERROR
 } from "../constants/ActionTypes";
 import { 
   API_BASE_URL,
@@ -15,6 +18,7 @@ import {
 } from "../constants/generalConstants";
 
 import axios from "axios";
+import { getCurrentPosition, getLocationNameFromCoords } from "../utils/geolocationUtils";
 
 /**
  * Create and configure API request URLs
@@ -199,6 +203,57 @@ export const addRecentLocation = (location) => ({
   type: ADD_RECENT_LOCATION,
   payload: location
 });
+
+/**
+ * Use browser geolocation to get weather for user's current location
+ * @param {string} unit - Temperature unit (metric or imperial)
+ * @returns {Function} Thunk function that gets location, fetches weather, and updates state
+ */
+export const getWeatherByGeolocation = (unit = DEFAULT_TEMPERATURE_UNIT) => async (dispatch) => {
+  dispatch({ type: GEOLOCATION_REQUEST });
+  
+  try {
+    // Get coordinates from browser geolocation API
+    const coords = await getCurrentPosition();
+    
+    // Fetch location name using reverse geocoding
+    const locationName = await getLocationNameFromCoords(coords);
+    
+    // Update state with successful geolocation
+    dispatch({
+      type: GEOLOCATION_SUCCESS,
+      payload: {
+        coords,
+        locationName
+      }
+    });
+    
+    // Update current location
+    dispatch({
+      type: SET_LOCATION,
+      payload: locationName
+    });
+    
+    // Add to recent locations
+    dispatch({
+      type: ADD_RECENT_LOCATION,
+      payload: locationName
+    });
+    
+    // Fetch weather data using coordinates
+    return dispatch(fetchData(coords, unit));
+  } catch (error) {
+    // Handle geolocation error
+    console.error("Geolocation error:", error);
+    
+    dispatch({
+      type: GEOLOCATION_ERROR,
+      payload: error.message
+    });
+    
+    return Promise.reject(error);
+  }
+};
 
 
 

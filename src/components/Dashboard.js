@@ -1,9 +1,10 @@
 import React, { useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-import { fetchData, setTemperatureUnit, setLocation } from "../actions/weatherStation";
+import { fetchData, setTemperatureUnit, setLocation, getWeatherByGeolocation } from "../actions/weatherStation";
 import UnitToggle from "./UnitToggle";
 import LocationSearch from "./LocationSearch";
+import GeolocationButton from "./GeolocationButton";
 
 /**
  * Header component displays the application title
@@ -95,6 +96,7 @@ const Dashboard = () => {
   const temperatureUnit = useSelector((state) => state.weatherStation.temperatureUnit);
   const recentLocations = useSelector((state) => state.weatherStation.recentLocations);
   const currentLocation = useSelector((state) => state.weatherStation.currentLocation);
+  const geoStatus = useSelector((state) => state.weatherStation.geolocation.status);
 
   const handleSearch = useCallback((searchTerm) => {
     dispatch(setLocation(searchTerm, temperatureUnit));
@@ -104,6 +106,10 @@ const Dashboard = () => {
     dispatch(setTemperatureUnit(unit, currentLocation));
   }, [dispatch, currentLocation]);
 
+  const handleGeolocation = useCallback(() => {
+    dispatch(getWeatherByGeolocation(temperatureUnit));
+  }, [dispatch, temperatureUnit]);
+
   const isError = status === "error";
   const wrapperClass = isError ? "weather-dashboard invalid-city" : "weather-dashboard";
   const errorMessage = error || "Please enter valid city name!";
@@ -112,11 +118,17 @@ const Dashboard = () => {
     <div className={wrapperClass} data-testid="weather-dashboard">
       <Header />
       <section className="controls">
-        <LocationSearch 
-          onSearch={handleSearch} 
-          defaultLocation={currentLocation} 
-          recentLocations={recentLocations} 
-        />
+        <div className="search-row">
+          <LocationSearch 
+            onSearch={handleSearch} 
+            defaultLocation={currentLocation} 
+            recentLocations={recentLocations} 
+          />
+          <GeolocationButton 
+            onGetLocation={handleGeolocation}
+            status={geoStatus}
+          />
+        </div>
         <UnitToggle unit={temperatureUnit} onToggle={handleUnitToggle} />
       </section>
       <ErrorMessage 

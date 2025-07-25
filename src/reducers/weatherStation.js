@@ -4,7 +4,10 @@ import {
   FETCH_DATA_REJECTED,
   SET_TEMPERATURE_UNIT,
   SET_LOCATION,
-  ADD_RECENT_LOCATION
+  ADD_RECENT_LOCATION,
+  GEOLOCATION_REQUEST,
+  GEOLOCATION_SUCCESS,
+  GEOLOCATION_ERROR
 } from "../constants/ActionTypes";
 import { DEFAULT_TEMPERATURE_UNIT, DEFAULT_LOCATION } from "../constants/generalConstants";
 
@@ -16,7 +19,12 @@ const initialState = {
   lastUpdated: null,
   temperatureUnit: DEFAULT_TEMPERATURE_UNIT,
   currentLocation: DEFAULT_LOCATION,
-  recentLocations: [DEFAULT_LOCATION]
+  recentLocations: [DEFAULT_LOCATION],
+  geolocation: {
+    status: "idle", // idle, loading, success, or error
+    error: null,
+    coords: null
+  }
 };
 
 /**
@@ -80,6 +88,36 @@ export default function weatherStationReducer(state = initialState, action) {
       return {
         ...state,
         recentLocations: [action.payload, ...state.recentLocations].slice(0, 5) // Keep only the 5 most recent
+      };
+      
+    case GEOLOCATION_REQUEST:
+      return {
+        ...state,
+        geolocation: {
+          ...state.geolocation,
+          status: "loading",
+          error: null
+        }
+      };
+      
+    case GEOLOCATION_SUCCESS:
+      return {
+        ...state,
+        geolocation: {
+          status: "success",
+          error: null,
+          coords: action.payload.coords
+        }
+      };
+      
+    case GEOLOCATION_ERROR:
+      return {
+        ...state,
+        geolocation: {
+          ...state.geolocation,
+          status: "error",
+          error: action.payload
+        }
       };
       
     default:
