@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { fetchData } from "./actions/weatherStation";
 import WeatherForecast from './components/WeatherForecast';
+import { THEMES } from "./constants/generalConstants";
 
 /**
  * App component - Main application entry point
@@ -10,8 +11,9 @@ import WeatherForecast from './components/WeatherForecast';
  * @param {Function} props.dispatch - Redux dispatch function
  * @param {string} props.status - Current status of the data fetch
  * @param {string} props.temperatureUnit - Current temperature unit (metric or imperial)
+ * @param {string} props.theme - Current theme (light or dark)
  */
-const App = ({ dispatch, status, temperatureUnit }) => {
+const App = ({ dispatch, status, temperatureUnit, theme }) => {
   // Fetches data by using geolocation. If the user blocks, or if the browser does not support the API, 
   // fallsback to default location of London
   useEffect(() => {
@@ -46,7 +48,7 @@ const App = ({ dispatch, status, temperatureUnit }) => {
   }, [dispatch, temperatureUnit]);
 
   return (
-    <>
+    <div className={`app-container ${theme === THEMES.DARK ? 'dark-theme' : ''}`}>
       {status === "initial" ? (
         <div className="loading">
           <div className="spinner" aria-label="Initializing application"></div>
@@ -64,13 +66,14 @@ const App = ({ dispatch, status, temperatureUnit }) => {
           </div> 
         </div>
       )}
-    </>
+    </div>
   );
 };
 
 const mapStateToProps = (state) => ({
   status: state.weatherStation.status,
-  temperatureUnit: state.weatherStation.temperatureUnit
+  temperatureUnit: state.weatherStation.temperatureUnit,
+  theme: state.theme.currentTheme
 });
 
 export default connect(mapStateToProps)(App);

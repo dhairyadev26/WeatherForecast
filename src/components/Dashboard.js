@@ -2,9 +2,11 @@ import React, { useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { fetchData, setTemperatureUnit, setLocation, getWeatherByGeolocation } from "../actions/weatherStation";
+import { applyTheme } from "../actions/theme";
 import UnitToggle from "./UnitToggle";
 import LocationSearch from "./LocationSearch";
 import GeolocationButton from "./GeolocationButton";
+import ThemeToggle from "./ThemeToggle";
 
 /**
  * Header component displays the application title
@@ -97,6 +99,7 @@ const Dashboard = () => {
   const recentLocations = useSelector((state) => state.weatherStation.recentLocations);
   const currentLocation = useSelector((state) => state.weatherStation.currentLocation);
   const geoStatus = useSelector((state) => state.weatherStation.geolocation.status);
+  const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   const handleSearch = useCallback((searchTerm) => {
     dispatch(setLocation(searchTerm, temperatureUnit));
@@ -109,6 +112,10 @@ const Dashboard = () => {
   const handleGeolocation = useCallback(() => {
     dispatch(getWeatherByGeolocation(temperatureUnit));
   }, [dispatch, temperatureUnit]);
+
+  const handleThemeToggle = useCallback((theme) => {
+    dispatch(applyTheme(theme));
+  }, [dispatch]);
 
   const isError = status === "error";
   const wrapperClass = isError ? "weather-dashboard invalid-city" : "weather-dashboard";
@@ -129,7 +136,10 @@ const Dashboard = () => {
             status={geoStatus}
           />
         </div>
-        <UnitToggle unit={temperatureUnit} onToggle={handleUnitToggle} />
+        <div className="settings-row">
+          <UnitToggle unit={temperatureUnit} onToggle={handleUnitToggle} />
+          <ThemeToggle theme={currentTheme} onToggle={handleThemeToggle} />
+        </div>
       </section>
       <ErrorMessage 
         visible={isError} 

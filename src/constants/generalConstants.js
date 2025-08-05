@@ -32,6 +32,13 @@ export const LAYOUT_TYPES = {
   STACKED: "stacked"
 };
 
+// Theme settings
+export const THEMES = {
+  LIGHT: "light",
+  DARK: "dark"
+};
+export const DEFAULT_THEME = THEMES.LIGHT;
+
 // Error messages
 export const ERROR_MESSAGES = {
   LOCATION_NOT_FOUND: "Location not found. Please try another city name.",
