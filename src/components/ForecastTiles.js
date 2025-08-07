@@ -64,10 +64,11 @@ const ForecastTiles = ({
     return (
       <div className="weather-info">
         <div className="min-max">
-          <strong>{`${maxTemp}${unitSymbol}`}</strong> / {`${minTemp}${unitSymbol}`}
+          <strong>{`${maxTemp}${unitSymbol}`}</strong> <span className="sr-only">high</span> / <span aria-hidden="true">{`${minTemp}${unitSymbol}`}</span>
+          <span className="sr-only">low of {`${minTemp}${unitSymbol}`}</span>
         </div>
         <div className="more-info">
-          {`Avg. Humidity: ${avgHumidity}%`}
+          <span>{`Avg. Humidity: ${avgHumidity}%`}</span>
         </div>
       </div>
     );
@@ -89,17 +90,23 @@ const ForecastTiles = ({
   const tilesContainerClass = compactView ? 'forecast-tiles compact' : 'forecast-tiles';
 
   return (
-    <div className={tilesContainerClass}>
+    <div className={tilesContainerClass} role="region" aria-label="5-Day Weather Forecast">
       {forecastTiles.map((item, i) => (
         <div
           className={`${tileClass} ${expandedTileIndex === i ? 'expanded' : ''}`}
           key={i}
           onClick={() => showMoreInfo(i)}
+          onKeyPress={(e) => e.key === 'Enter' && showMoreInfo(i)}
           data-testid={`forecast-tile-${i}`}
+          tabIndex="0"
+          role="button"
+          aria-expanded={expandedTileIndex === i}
+          aria-controls={`details-${i}`}
+          aria-label={`${getDayInfo(item)} weather forecast. ${item[0].weather[0].description}. Click to ${expandedTileIndex === i ? 'hide' : 'show'} hourly details`}
         >
           <div className="primary-info">
             <div className="icon">
-              <img src={getIcon(item)} alt={item[0].weather[0].description} />
+              <img src={getIcon(item)} alt="" aria-hidden="true" />
               <span className="day">
                 {compactView ? getDayInfo(item).substring(0, 3) : getDayInfo(item)}
               </span>
@@ -107,7 +114,7 @@ const ForecastTiles = ({
             {getInfo(item)}
           </div>
           {expandedTileIndex === i && (
-            <div className="detailed-info">
+            <div className="detailed-info" id={`details-${i}`}>
               <DetailedInfo data={item} unit={unit} compactView={compactView} />
             </div>
           )}

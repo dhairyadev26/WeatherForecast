@@ -13,7 +13,7 @@ import ThemeToggle from "./ThemeToggle";
  */
 const Header = () => (
   <header>
-    <h1 className="heading">5-Day Weather Forecast</h1>
+    <h1 className="heading" id="main-heading" tabIndex="-1">5-Day Weather Forecast</h1>
   </header>
 );
 
@@ -52,15 +52,20 @@ const SearchBar = ({ defaultCity, onSearch }) => {
         onKeyPress={handleKeyPress}
         placeholder={defaultCity || "Enter city name"}
         aria-label="City name"
+        aria-describedby="search-instructions"
       />
-      <input
+      <span id="search-instructions" className="sr-only">
+        Enter a city name and press Enter or click the search button
+      </span>
+      <button
         type="button"
-        value=">"
         className="search"
         onClick={handleSubmit}
         id="change-city-btn"
-        aria-label="Search city"
-      />
+        aria-label="Search for weather in this city"
+      >
+        <span aria-hidden="true">&gt;</span>
+      </button>
     </div>
   );
 };
@@ -124,7 +129,7 @@ const Dashboard = () => {
   return (
     <div className={wrapperClass} data-testid="weather-dashboard">
       <Header />
-      <section className="controls">
+      <section className="controls" aria-label="Weather controls">
         <div className="search-row">
           <LocationSearch 
             onSearch={handleSearch} 
@@ -136,15 +141,17 @@ const Dashboard = () => {
             status={geoStatus}
           />
         </div>
-        <div className="settings-row">
+        <div className="settings-row" role="group" aria-label="Display settings">
           <UnitToggle unit={temperatureUnit} onToggle={handleUnitToggle} />
           <ThemeToggle theme={currentTheme} onToggle={handleThemeToggle} />
         </div>
       </section>
-      <ErrorMessage 
-        visible={isError} 
-        message={errorMessage} 
-      />
+      <div aria-live="assertive">
+        <ErrorMessage 
+          visible={isError} 
+          message={errorMessage} 
+        />
+      </div>
     </div>
   );
 };
