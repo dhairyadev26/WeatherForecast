@@ -3,10 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { fetchData, setTemperatureUnit, setLocation, getWeatherByGeolocation } from "../actions/weatherStation";
 import { applyTheme } from "../actions/theme";
+import { setLanguage } from "../actions/language";
 import UnitToggle from "./UnitToggle";
 import LocationSearch from "./LocationSearch";
 import GeolocationButton from "./GeolocationButton";
 import ThemeToggle from "./ThemeToggle";
+import LanguageSelector from "./LanguageSelector";
+import { getText } from "../constants/localization";
 
 /**
  * Header component displays the application title
@@ -105,6 +108,7 @@ const Dashboard = () => {
   const currentLocation = useSelector((state) => state.weatherStation.currentLocation);
   const geoStatus = useSelector((state) => state.weatherStation.geolocation.status);
   const currentTheme = useSelector((state) => state.theme.currentTheme);
+  const currentLanguage = useSelector((state) => state.language.currentLanguage);
 
   const handleSearch = useCallback((searchTerm) => {
     dispatch(setLocation(searchTerm, temperatureUnit));
@@ -120,6 +124,10 @@ const Dashboard = () => {
 
   const handleThemeToggle = useCallback((theme) => {
     dispatch(applyTheme(theme));
+  }, [dispatch]);
+
+  const handleLanguageChange = useCallback((language) => {
+    dispatch(setLanguage(language));
   }, [dispatch]);
 
   const isError = status === "error";
@@ -144,6 +152,7 @@ const Dashboard = () => {
         <div className="settings-row" role="group" aria-label="Display settings">
           <UnitToggle unit={temperatureUnit} onToggle={handleUnitToggle} />
           <ThemeToggle theme={currentTheme} onToggle={handleThemeToggle} />
+          <LanguageSelector currentLanguage={currentLanguage} onLanguageChange={handleLanguageChange} />
         </div>
       </section>
       <div aria-live="assertive">
