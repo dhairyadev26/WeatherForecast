@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { fetchData } from "./actions/weatherStation";
+import { dismissAlert, dismissNotification } from "./actions/alerts";
 import WeatherForecast from './components/WeatherForecast';
+import AlertBanner from './components/AlertBanner';
+import NotificationCenter from './components/NotificationCenter';
 import { THEMES } from "./constants/generalConstants";
 
 /**
@@ -12,8 +15,10 @@ import { THEMES } from "./constants/generalConstants";
  * @param {string} props.status - Current status of the data fetch
  * @param {string} props.temperatureUnit - Current temperature unit (metric or imperial)
  * @param {string} props.theme - Current theme (light or dark)
+ * @param {Array} props.alerts - Weather alerts
+ * @param {Array} props.notifications - System notifications
  */
-const App = ({ dispatch, status, temperatureUnit, theme }) => {
+const App = ({ dispatch, status, temperatureUnit, theme, alerts, notifications }) => {
   // Fetches data by using geolocation. If the user blocks, or if the browser does not support the API, 
   // fallsback to default location of London
   useEffect(() => {
@@ -55,6 +60,14 @@ const App = ({ dispatch, status, temperatureUnit, theme }) => {
         </div>
       ) : (
         <div>
+          <NotificationCenter 
+            notifications={notifications} 
+            onDismiss={(id) => dispatch(dismissNotification(id))} 
+          />
+          <AlertBanner 
+            alerts={alerts} 
+            onDismiss={(id) => dispatch(dismissAlert(id))} 
+          />
           <WeatherForecast />
           <div className="fork">
             <a href="https://github.com/dhairyadev26/WeatherForecast" 
@@ -73,7 +86,9 @@ const App = ({ dispatch, status, temperatureUnit, theme }) => {
 const mapStateToProps = (state) => ({
   status: state.weatherStation.status,
   temperatureUnit: state.weatherStation.temperatureUnit,
-  theme: state.theme.currentTheme
+  theme: state.theme.currentTheme,
+  alerts: state.alerts.alerts,
+  notifications: state.alerts.notifications
 });
 
 export default connect(mapStateToProps)(App);

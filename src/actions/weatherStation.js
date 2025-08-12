@@ -19,6 +19,7 @@ import {
 
 import axios from "axios";
 import { getCurrentPosition, getLocationNameFromCoords } from "../utils/geolocationUtils";
+import { fetchAlerts } from "./alerts";
 
 /**
  * Create and configure API request URLs
@@ -134,6 +135,9 @@ export const fetchData = (location, unit = DEFAULT_TEMPERATURE_UNIT) => async (d
       type: FETCH_DATA_FULFILLED, 
       payload: response.data
     });
+    
+    // Fetch alerts for this location
+    dispatch(fetchAlerts(location));
     
     return response.data;
   } catch (error) {

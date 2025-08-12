@@ -39,6 +39,21 @@ export const THEMES = {
 };
 export const DEFAULT_THEME = THEMES.LIGHT;
 
+// Alert and notification settings
+export const ALERT_TYPES = {
+  WEATHER: "weather",
+  SYSTEM: "system"
+};
+
+export const SEVERITY_LEVELS = {
+  INFO: "info",
+  WARNING: "warning",
+  SEVERE: "severe",
+  EXTREME: "extreme"
+};
+
+export const NOTIFICATION_TIMEOUT = 5000; // 5 seconds
+
 // Error messages
 export const ERROR_MESSAGES = {
   LOCATION_NOT_FOUND: "Location not found. Please try another city name.",
