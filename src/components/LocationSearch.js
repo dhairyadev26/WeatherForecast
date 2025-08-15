@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { debounce } from '../utils/performance';
 
 /**
  * LocationSearch component allows users to search for weather in different locations
@@ -12,36 +13,48 @@ const LocationSearch = ({ onSearch, defaultLocation = '', recentLocations = [] }
   const [searchTerm, setSearchTerm] = useState(defaultLocation);
   const [showRecent, setShowRecent] = useState(false);
 
-  const handleSubmit = (e) => {
+  // Debounced search for better performance
+  const debouncedSearch = useCallback(
+    debounce((term) => {
+      if (term.trim()) {
+        onSearch(term.trim());
+      }
+    }, 500),
+    [onSearch]
+  );
+
+  const handleSubmit = useCallback((e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
       onSearch(searchTerm.trim());
       setShowRecent(false);
     }
-  };
+  }, [searchTerm, onSearch]);
 
-  const handleChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
+  const handleChange = useCallback((e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    debouncedSearch(value);
+  }, [debouncedSearch]);
 
-  const handleFocus = () => {
+  const handleFocus = useCallback(() => {
     if (recentLocations.length > 0) {
       setShowRecent(true);
     }
-  };
+  }, [recentLocations]);
 
-  const handleBlur = () => {
+  const handleBlur = useCallback(() => {
     // Delay hiding the recent searches to allow clicking on them
     setTimeout(() => {
       setShowRecent(false);
     }, 200);
-  };
+  }, []);
 
-  const selectRecentLocation = (location) => {
+  const selectRecentLocation = useCallback((location) => {
     setSearchTerm(location);
     onSearch(location);
     setShowRecent(false);
-  };
+  }, [onSearch]);
 
   return (
     <div className="location-search" data-testid="location-search">
@@ -97,4 +110,4 @@ LocationSearch.propTypes = {
   recentLocations: PropTypes.array
 };
 
-export default LocationSearch;
+export default React.memo(LocationSearch);

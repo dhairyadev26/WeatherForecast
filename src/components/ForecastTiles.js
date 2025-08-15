@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import DetailedInfo from "./DetailedInfo";
 import { TEMPERATURE_UNITS } from "../constants/generalConstants";
+import { memoize } from "../utils/performance";
 
 /**
  * ForecastTiles component for displaying a weather forecast
@@ -20,26 +21,30 @@ const ForecastTiles = ({
   const [expandedTileIndex, setExpandedTileIndex] = useState(null);
 
   // Filters the data by date and returns an Object containing a list of 5-day forecast
-  const groupByDays = (data) => {
+  // Memoized for performance
+  const groupByDays = useMemo(() => memoize((data) => {
     return data.reduce((list, item) => {
       const forecastDate = item.dt_txt.substr(0, 10);
       list[forecastDate] = list[forecastDate] || [];
       list[forecastDate].push(item);
       return list;
     }, {});
-  };
+  }), []);
 
-  // Returns day of the week
-  const getDayInfo = (data) => {
+  // Returns day of the week - memoized for performance
+  const getDayInfo = useMemo(() => memoize((data) => {
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     return daysOfWeek[new Date(data[0].dt * 1000).getDay()];
-  };
+  }), []);
 
-  // Fetches the weather icon
-  const getIcon = (data) => `https://openweathermap.org/img/w/${data[0].weather[0].icon}.png`;
+  // Fetches the weather icon - memoized for performance
+  const getIcon = useMemo(() => memoize((data) => 
+    `https://openweathermap.org/img/w/${data[0].weather[0].icon}.png`
+  ), []);
 
   // Gets the Minimum, Maximum temperatures and Avg Humidity of the day
-  const getInfo = (data) => {
+  // Memoized for performance
+  const getInfo = useMemo(() => memoize((data, unit) => {
     const temps = {
       min: [],
       max: [],
@@ -72,26 +77,31 @@ const ForecastTiles = ({
         </div>
       </div>
     );
-  };
+  }), []);
 
   // Toggles accordion to display hourly weather information
-  const showMoreInfo = (index) => {
+  const showMoreInfo = useCallback((index) => {
     setExpandedTileIndex(expandedTileIndex === index ? null : index);
-  };
+  }, [expandedTileIndex]);
 
-  // Group forecasts by day
-  const tiles = Object.values(groupByDays(forecasts));
-
-  // Limit to specified number of days
-  const forecastTiles = tiles.length > displayCount ? tiles.slice(0, displayCount) : tiles;
+  // Group forecasts by day - memoized for performance
+  const groupedForecasts = useMemo(() => {
+    const tiles = Object.values(groupByDays(forecasts));
+    return tiles.length > displayCount ? tiles.slice(0, displayCount) : tiles;
+  }, [forecasts, displayCount, groupByDays]);
 
   // Determine CSS classes based on compact view
-  const tileClass = compactView ? 'forecast-tile compact' : 'forecast-tile';
-  const tilesContainerClass = compactView ? 'forecast-tiles compact' : 'forecast-tiles';
+  const tileClass = useMemo(() => 
+    compactView ? 'forecast-tile compact' : 'forecast-tile', 
+  [compactView]);
+  
+  const tilesContainerClass = useMemo(() => 
+    compactView ? 'forecast-tiles compact' : 'forecast-tiles', 
+  [compactView]);
 
   return (
     <div className={tilesContainerClass} role="region" aria-label="5-Day Weather Forecast">
-      {forecastTiles.map((item, i) => (
+      {groupedForecasts.map((item, i) => (
         <div
           className={`${tileClass} ${expandedTileIndex === i ? 'expanded' : ''}`}
           key={i}
@@ -111,7 +121,7 @@ const ForecastTiles = ({
                 {compactView ? getDayInfo(item).substring(0, 3) : getDayInfo(item)}
               </span>
             </div>
-            {getInfo(item)}
+            {getInfo(item, unit)}
           </div>
           {expandedTileIndex === i && (
             <div className="detailed-info" id={`details-${i}`}>
@@ -131,7 +141,7 @@ ForecastTiles.propTypes = {
   displayCount: PropTypes.number
 };
 
-export default ForecastTiles;
+export default React.memo(ForecastTiles);
 
 
 
