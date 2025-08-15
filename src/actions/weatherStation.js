@@ -14,7 +14,8 @@ import {
   API_ENDPOINTS,
   APP_ID,
   ERROR_MESSAGES,
-  DEFAULT_TEMPERATURE_UNIT
+  DEFAULT_TEMPERATURE_UNIT,
+  DEFAULT_LOCATION
 } from "../constants/generalConstants";
 
 import axios from "axios";
@@ -98,12 +99,10 @@ const handleApiError = (error, location) => {
  * @param {string} unit - Temperature unit (metric or imperial)
  * @returns {Function} Thunk function
  */
-export const fetchData = (location, unit = DEFAULT_TEMPERATURE_UNIT) => async (dispatch) => {
-  // Input validation
+export const fetchData = (location = DEFAULT_LOCATION, unit = DEFAULT_TEMPERATURE_UNIT) => async (dispatch) => {
+  // Input validation - use default location if none provided
   if (!location) {
-    const errorMessage = "Location is required";
-    dispatch({ type: FETCH_DATA_REJECTED, payload: errorMessage });
-    return Promise.reject(new Error(errorMessage));
+    location = DEFAULT_LOCATION;
   }
   
   // Dispatch request action to indicate loading state

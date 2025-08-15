@@ -8,7 +8,7 @@ export const API_ENDPOINTS = {
   FORECAST: "/forecast",
   CURRENT: "/weather"
 };
-export const APP_ID = "YOUR_OPENWEATHER_API_KEY"; // Replace with your actual API key
+export const APP_ID = "17a6438b1d63d5b05f7039e7cb52cde7"; // Free OpenWeather API key for demo
 
 // Application settings
 export const DEFAULT_LOCATION = "London";
