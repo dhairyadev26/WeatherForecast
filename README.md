@@ -1,73 +1,130 @@
-![logo](https://image.ibb.co/g69ZDx/682111_cloud_512x512.png)
-
 # 5-Day Weather Forecast
-A simple application to display 5-day weather forecast using the OpenWeatherMap API. Built on top of my recently created [React-Redux-Sass Starter Kit](https://github.com/Gigacore/React-Redux-Sass-Starter).
 
-### Demo
-https://www.gigacore.in/demos/react-weather-forecast/
+A modern, responsive application to display 5-day weather forecasts using the OpenWeatherMap API. This project provides an intuitive interface for viewing weather forecasts with multiple features including dark mode, language localization, and accessibility support.
 
-## Pre-requisites
-* Node.js 9.8.0 and above
+![Weather Forecast App Screenshot](https://image.ibb.co/g69ZDx/682111_cloud_512x512.png)
 
-## Run
+## Features
+
+- 📱 Responsive design that works on all screen sizes
+- 🌓 Dark mode support for comfortable viewing
+- 🌍 Localization support (English, Spanish, French, German, Chinese)
+- ♿ Accessibility optimized for screen readers
+- 📍 Geolocation to automatically detect user location
+- 🔍 Search functionality with recent location history
+- 📊 Detailed hourly forecast information
+- 🔄 Weather alerts and notifications
+- 🔁 Unit toggle between Celsius and Fahrenheit
+- ⚡ Performance optimized with memoization and debouncing
+
+## Live Demo
+
+Visit the live demo at: https://www.gigacore.in/demos/react-weather-forecast/
+
+## Prerequisites
+
+- Node.js 14.x or higher
+- npm 6.x or higher
+
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/dhairyadev26/WeatherForecast.git
+
+# Navigate to the project directory
+cd WeatherForecast
+
+# Install dependencies
+npm install
 ```
-git clone
-cd react-weather-forecast
-npm i
-```
 
+## Development
 
-## Start the dev server
-```
-
+```bash
+# Start the development server
 npm run start:dev
-
 ```
 
-## Build
-```
+The application will be available at `http://localhost:8080` by default.
 
+## Building for Production
+
+```bash
+# Create a production build
 npm run build
-
 ```
 
-#### Notes:
-* Running the build bundles all your updates to ```bundle.js``` and ```bundle.css``` in dist folder.
-* If you insist to automate the build upon appending changes to files, use ```webpack --watch```
+The build artifacts will be stored in the `dist/` directory.
 
-## Test
-```
+## Testing
 
+```bash
+# Run tests
 npm run test
 
+# Run tests with coverage
+npm run test:coverage
 ```
 
-#### Notes:
-* Unit testing can be done manually by executing the above command.
-* It will be done automatically prior committing the updates to the repo as a pre-commit hook.
+## Project Structure
 
-### TODOs
-- [x] Provide an option for user to choose location of their choice by Name, Lat/Long etc
-- [x] Unit testing
-- [x] Identify and address edgecases.
-- [x] Revisit the code to improve performance. Such as sorting, looping, searching etc.
-- [x] Use a proper loading spinner icon on page load
-- [x] Detect location automatically
-- [x] Display hourly forecasts.
-- [ ] Add an option to choose Units in either Metric or Imperial.
-- [ ] Display higher-level of weather information such as Wind Speed, Precipitation etc
-- [ ] Fix lint issues and config the eslintrc to support "no-vars-used" for Imports
-- [ ] Better and more functional UI
-- [ ] Prevent fetching new data on every refresh by caching the data for a set duration of session.
+```
+WeatherForecast/
+├── src/                  # Source files
+│   ├── actions/          # Redux actions
+│   ├── components/       # React components
+│   ├── constants/        # Constants and configuration
+│   ├── reducers/         # Redux reducers
+│   ├── styles/           # SCSS stylesheets
+│   ├── test/             # Test files
+│   ├── utils/            # Utility functions
+│   ├── App.js            # Main App component
+│   ├── index.js          # Entry point
+│   └── store.js          # Redux store configuration
+├── dist/                 # Compiled files
+├── webpack.config.js     # Webpack configuration
+├── package.json          # Dependencies and scripts
+└── README.md             # Project documentation
+```
 
-### Tech Stack
+## Technologies
 
-* React.js
-* Redux
-* JavaScript (ES6)
-* HTML5
-* SASS
-* Jest + Enzyme
+- **Frontend Framework**: React.js
+- **State Management**: Redux
+- **Styling**: SCSS/SASS
+- **Build Tool**: Webpack
+- **Testing**: Jest & Enzyme
+- **Language**: JavaScript (ES6+)
 
-#### The MIT License (MIT)
-MIT © 2018 Santhosh Sundar
+## Accessibility
+
+This application follows WCAG 2.1 guidelines for accessibility:
+
+- Proper semantic HTML structure
+- ARIA attributes for interactive elements
+- Keyboard navigation support
+- Screen reader friendly content
+- Color contrast compliance
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+- Opera (latest)
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- OpenWeatherMap API for weather data
+- Icons provided by [Weather Icons](https://erikflowers.github.io/weather-icons/)
+- Original starter kit by [Gigacore](https://github.com/Gigacore)
