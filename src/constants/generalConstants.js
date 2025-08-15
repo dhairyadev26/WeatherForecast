@@ -26,6 +26,12 @@ export const DISPLAY_MODES = {
 };
 export const DEFAULT_DISPLAY_MODE = DISPLAY_MODES.DAILY;
 
+// Layout types for mobile view
+export const LAYOUT_TYPES = {
+  GRID: "grid",
+  STACKED: "stacked"
+};
+
 // Error messages
 export const ERROR_MESSAGES = {
   LOCATION_NOT_FOUND: "Location not found. Please try another city name.",

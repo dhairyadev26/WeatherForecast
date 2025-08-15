@@ -24,6 +24,20 @@ body {
   --bg-dark: #333333;
   --border-radius: 4px;
   --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  
+  /* Responsive breakpoints */
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  
+  /* Spacing */
+  --spacing-xs: 5px;
+  --spacing-sm: 10px;
+  --spacing-md: 15px;
+  --spacing-lg: 20px;
+  --spacing-xl: 30px;
 }
 
 /* Loading spinner */
@@ -73,7 +87,10 @@ body {
   .controls {
     display: flex;
     justify-content: center;
-    margin-bottom: 30px;
+    align-items: center;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    flex-wrap: wrap;
     
     .search-container {
       display: flex;
@@ -224,13 +241,74 @@ body {
   }
 }
 
-/* Responsive styles */
-@media (max-width: 768px) {
+/* Enhanced responsive styles */
+/* Mobile styles (up to 576px) */
+@media (max-width: 576px) {
   .weather-dashboard {
-    padding: 15px;
+    padding: var(--spacing-sm);
     
     header .heading {
-      font-size: 24px;
+      font-size: 20px;
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .controls {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-md);
+      
+      .search-container {
+        width: 100%;
+      }
+      
+      .unit-toggle {
+        margin-top: var(--spacing-md);
+      }
+    }
+  }
+  
+  .forecast-tiles {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+    
+    .forecast-tile {
+      padding: var(--spacing-sm);
+      
+      .primary-info {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        
+        .icon, .weather-info {
+          width: 100%;
+          text-align: center;
+        }
+      }
+      
+      .detailed-info .hourly-container .hourly-forecast .hourly-info {
+        width: 100%;
+        margin-bottom: var(--spacing-md);
+      }
+    }
+  }
+}
+
+/* Tablet styles (577px to 992px) */
+@media (min-width: 577px) and (max-width: 992px) {
+  .weather-dashboard {
+    padding: var(--spacing-md);
+    
+    .controls {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--spacing-md);
+    }
+  }
+  
+  .forecast-tiles {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    
+    .forecast-tile .detailed-info .hourly-container .hourly-forecast .hourly-info {
+      width: calc(50% - var(--spacing-md));
     }
   }
 }
@@ -554,3 +632,6 @@ body {
     text-align: center;
   }
 }
+
+/* Import view toggle styles */
+@import './view-toggle.scss';

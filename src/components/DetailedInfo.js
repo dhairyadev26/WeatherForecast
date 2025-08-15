@@ -7,8 +7,9 @@ import { TEMPERATURE_UNITS } from "../constants/generalConstants";
  * @param {Object} props - Component props
  * @param {Array} props.data - Array of hourly forecast data for a specific day
  * @param {string} props.unit - Temperature unit (metric or imperial)
+ * @param {boolean} props.compactView - Whether to use compact view for smaller screens
  */
-const DetailedInfo = ({ data, unit = TEMPERATURE_UNITS.CELSIUS }) => {
+const DetailedInfo = ({ data, unit = TEMPERATURE_UNITS.CELSIUS, compactView = false }) => {
   // Get current hour and date for comparison
   const currentDate = new Date();
   const currentHour = currentDate.getHours();
@@ -62,7 +63,7 @@ const DetailedInfo = ({ data, unit = TEMPERATURE_UNITS.CELSIUS }) => {
     const iconCode = item.weather[0].icon;
     
     return (
-      <div className="hourly-info" key={index} data-testid={`hourly-info-${index}`}>
+      <div className={`hourly-info ${compactView ? 'compact' : ''}`} key={index} data-testid={`hourly-info-${index}`}>
         <div className="hour-header">
           <div className="hour-of-the-day">{formatTime(item.dt)}</div>
           <div className="weather-icon">
@@ -80,7 +81,7 @@ const DetailedInfo = ({ data, unit = TEMPERATURE_UNITS.CELSIUS }) => {
             <div className="weather-description">{weatherDescription}</div>
             <div className="humidity">{`Humidity: ${humidity}%`}</div>
             <div className="wind">{`Wind: ${windSpeed} ${windUnit} ${windDirection}`}</div>
-            <div className="clouds">{`Clouds: ${cloudCoverage}%`}</div>
+            {!compactView && <div className="clouds">{`Clouds: ${cloudCoverage}%`}</div>}
           </div>
         </div>
       </div>
@@ -103,10 +104,10 @@ const DetailedInfo = ({ data, unit = TEMPERATURE_UNITS.CELSIUS }) => {
   });
 
   return (
-    <div className="hourly-container">
+    <div className={`hourly-container ${compactView ? 'compact-container' : ''}`}>
       <h3 className="hourly-title">Hourly Forecast</h3>
       {filteredData.length > 0 ? (
-        <div className="hourly-forecast" data-testid="hourly-forecast">
+        <div className={`hourly-forecast ${compactView ? 'compact-grid' : ''}`} data-testid="hourly-forecast">
           {filteredData.map(renderHourlyInfo)}
         </div>
       ) : (
@@ -118,7 +119,8 @@ const DetailedInfo = ({ data, unit = TEMPERATURE_UNITS.CELSIUS }) => {
 
 DetailedInfo.propTypes = {
   data: PropTypes.array.isRequired,
-  unit: PropTypes.string
+  unit: PropTypes.string,
+  compactView: PropTypes.bool
 };
 
 export default DetailedInfo;

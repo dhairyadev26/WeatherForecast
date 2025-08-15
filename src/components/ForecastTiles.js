@@ -4,12 +4,19 @@ import DetailedInfo from "./DetailedInfo";
 import { TEMPERATURE_UNITS } from "../constants/generalConstants";
 
 /**
- * ForecastTiles component for displaying a 5-day weather forecast
+ * ForecastTiles component for displaying a weather forecast
  * @param {Object} props - Component props
  * @param {Array} props.forecasts - Array of forecast data
  * @param {string} props.unit - Temperature unit (metric or imperial)
+ * @param {boolean} props.compactView - Whether to use compact view for smaller screens
+ * @param {number} props.displayCount - Number of days to display (default: 5)
  */
-const ForecastTiles = ({ forecasts, unit = TEMPERATURE_UNITS.CELSIUS }) => {
+const ForecastTiles = ({ 
+  forecasts, 
+  unit = TEMPERATURE_UNITS.CELSIUS,
+  compactView = false,
+  displayCount = 5
+}) => {
   const [expandedTileIndex, setExpandedTileIndex] = useState(null);
 
   // Filters the data by date and returns an Object containing a list of 5-day forecast
@@ -74,14 +81,18 @@ const ForecastTiles = ({ forecasts, unit = TEMPERATURE_UNITS.CELSIUS }) => {
   // Group forecasts by day
   const tiles = Object.values(groupByDays(forecasts));
 
-  // Ensure we only show 5 days of forecast
-  const forecastTiles = tiles.length > 5 ? tiles.slice(0, 5) : tiles;
+  // Limit to specified number of days
+  const forecastTiles = tiles.length > displayCount ? tiles.slice(0, displayCount) : tiles;
+
+  // Determine CSS classes based on compact view
+  const tileClass = compactView ? 'forecast-tile compact' : 'forecast-tile';
+  const tilesContainerClass = compactView ? 'forecast-tiles compact' : 'forecast-tiles';
 
   return (
-    <div className="forecast-tiles">
+    <div className={tilesContainerClass}>
       {forecastTiles.map((item, i) => (
         <div
-          className={`forecast-tile ${expandedTileIndex === i ? 'expanded' : ''}`}
+          className={`${tileClass} ${expandedTileIndex === i ? 'expanded' : ''}`}
           key={i}
           onClick={() => showMoreInfo(i)}
           data-testid={`forecast-tile-${i}`}
@@ -89,13 +100,15 @@ const ForecastTiles = ({ forecasts, unit = TEMPERATURE_UNITS.CELSIUS }) => {
           <div className="primary-info">
             <div className="icon">
               <img src={getIcon(item)} alt={item[0].weather[0].description} />
-              <span className="day">{getDayInfo(item)}</span>
+              <span className="day">
+                {compactView ? getDayInfo(item).substring(0, 3) : getDayInfo(item)}
+              </span>
             </div>
             {getInfo(item)}
           </div>
           {expandedTileIndex === i && (
             <div className="detailed-info">
-              <DetailedInfo data={item} unit={unit} />
+              <DetailedInfo data={item} unit={unit} compactView={compactView} />
             </div>
           )}
         </div>
@@ -106,7 +119,9 @@ const ForecastTiles = ({ forecasts, unit = TEMPERATURE_UNITS.CELSIUS }) => {
 
 ForecastTiles.propTypes = {
   forecasts: PropTypes.array.isRequired,
-  unit: PropTypes.string
+  unit: PropTypes.string,
+  compactView: PropTypes.bool,
+  displayCount: PropTypes.number
 };
 
 export default ForecastTiles;
